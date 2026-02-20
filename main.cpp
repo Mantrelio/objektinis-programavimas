@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 #include "student.h"
 
 using std::cout;
@@ -19,7 +20,23 @@ double calculateFinalGradeAverage(vector<int> homeworkGrades, int examGrade) {
     return homeworkGradeSum / homeworkGrades.size() * 0.4 + examGrade * 0.6;
 }
 
-Student createStudent() {
+double calculateFinalGradeMedian(vector<int> homeworkGrades, int examGrade) {
+    vector<int> sortedGrades = homeworkGrades;
+    std::sort(sortedGrades.begin(), sortedGrades.end());
+    
+    double median;
+    int size = sortedGrades.size();
+    
+    if (size % 2 == 0) {
+        median = (sortedGrades[size / 2 - 1] + sortedGrades[size / 2]) / 2.0;
+    } else {
+        median = sortedGrades[size / 2];
+    }
+    
+    return median * 0.4 + examGrade * 0.6;
+}
+
+Student createStudent(bool useMedian) {
     Student student = Student();
 
     cout << "Enter student name: ";
@@ -43,28 +60,40 @@ Student createStudent() {
         student.homeworkGrades.push_back(grade);
     }
     
-    student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
+    if (useMedian) {
+        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
+    } else {
+        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
+    }
     
     return student;
 }
 
 int main() {
     int studentCount;
+    char calculationType;
+    bool useMedian;
 
     cout << "Enter number of students: ";
     cin >> studentCount;
+    
+    cout << "Use median (m) or average (a) for final grade calculation? ";
+    cin >> calculationType;
+    useMedian = (calculationType == 'm' || calculationType == 'M');
 
     vector<Student> students;
 
     for (int i = 0; i < studentCount; i++) {
         cout << "\n--- Student " << (i + 1) << " ---" << endl;
-        students.push_back(createStudent());
+        students.push_back(createStudent(useMedian));
     }
 
+    string headerLabel = useMedian ? "Final (Med.)" : "Final (Avg.)";
+    
     cout << "\n" << string(52, '=') << endl;
     cout << left << setw(20) << "Name" 
          << setw(20) << "Surname" 
-         << "Final (Avg.)" << endl;
+         << headerLabel << endl;
     cout << string(52, '-') << endl;
     
     for (int i = 0; i < studentCount; i++) {
