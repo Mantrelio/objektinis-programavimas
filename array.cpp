@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 #include "student-array.h"
 
 using std::cout;
@@ -9,6 +11,20 @@ using std::endl;
 using std::setw;
 using std::left;
 using std::string;
+
+int randomGrade(int min = 1, int max = 10) {
+    return rand() % (max - min + 1) + min;
+}
+
+string randomName() {
+    const string names[] = {"Jonas", "Petras", "Antanas", "Marija", "Ona", "Jurate", "Tomas", "Mindaugas", "Ruta", "Greta"};
+    return names[rand() % 10];
+}
+
+string randomSurname() {
+    const string surnames[] = {"Jonaitis", "Petraitis", "Antanaitis", "Kazlauskas", "Zukauskas", "Jankauskas", "Paulauskas", "Stankevicius", "Vasiliauskas", "Baranauskas"};
+    return surnames[rand() % 10];
+}
 
 double calculateFinalGradeAverage(int* homeworkGrades, int count, int examGrade) {
     double homeworkGradeSum = 0;
@@ -39,7 +55,7 @@ double calculateFinalGradeMedian(int* homeworkGrades, int count, int examGrade) 
     return median * 0.4 + examGrade * 0.6;
 }
 
-Student createStudent(bool useMedian) {
+Student createStudentManual(bool useMedian) {
     Student student = Student();
 
     cout << "Enter student name: ";
@@ -85,7 +101,68 @@ Student createStudent(bool useMedian) {
     return student;
 }
 
+Student createStudentRandomGrades(bool useMedian) {
+    Student student = Student();
+
+    cout << "Enter student name: ";
+    cin >> student.name;
+    
+    cout << "Enter student surname: ";
+    cin >> student.surname;
+    
+    student.examGrade = randomGrade();
+    cout << "Generated exam grade: " << student.examGrade << endl;
+
+    int homeworkCount = randomGrade(3, 10);
+    student.homeworkGrades = new int[homeworkCount];
+    student.homeworkCount = homeworkCount;
+    
+    cout << "Generated " << homeworkCount << " homework grades: ";
+    for (int i = 0; i < homeworkCount; i++) {
+        student.homeworkGrades[i] = randomGrade();
+        cout << student.homeworkGrades[i];
+        if (i < homeworkCount - 1) cout << ", ";
+    }
+    cout << endl;
+    
+    if (useMedian) {
+        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.homeworkCount, student.examGrade);
+    } else {
+        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.homeworkCount, student.examGrade);
+    }
+    
+    return student;
+}
+
+Student createStudentFullyRandom(bool useMedian) {
+    Student student = Student();
+
+    student.name = randomName();
+    student.surname = randomSurname();
+    student.examGrade = randomGrade();
+
+    int homeworkCount = randomGrade(3, 10);
+    student.homeworkGrades = new int[homeworkCount];
+    student.homeworkCount = homeworkCount;
+    
+    for (int i = 0; i < homeworkCount; i++) {
+        student.homeworkGrades[i] = randomGrade();
+    }
+    
+    if (useMedian) {
+        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.homeworkCount, student.examGrade);
+    } else {
+        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.homeworkCount, student.examGrade);
+    }
+    
+    cout << "Generated student: " << student.name << " " << student.surname << endl;
+    
+    return student;
+}
+
 int main() {
+    srand(time(0));
+    
     char calculationType;
     bool useMedian;
     
@@ -97,9 +174,24 @@ int main() {
     Student* students = new Student[capacity];
     int studentCount = 0;
 
-    char continueInput = 'y';
+    int choice = 0;
 
-    while (continueInput == 'y' || continueInput == 'Y') {
+    while (choice != 4) {
+        cout << "\n=== MENU ===" << endl;
+        cout << "1 - Manual input (enter all values)" << endl;
+        cout << "2 - Enter name/surname, generate grades" << endl;
+        cout << "3 - Generate all data randomly" << endl;
+        cout << "4 - Exit and show results" << endl;
+        cout << "Choose option: ";
+        cin >> choice;
+        
+        if (choice == 4) break;
+        
+        if (choice < 1 || choice > 4) {
+            cout << "Invalid option. Please try again." << endl;
+            continue;
+        }
+        
         if (studentCount >= capacity) {
             capacity *= 2;
             Student* newArray = new Student[capacity];
@@ -111,11 +203,20 @@ int main() {
         }
         
         cout << "\n--- Student " << (studentCount + 1) << " ---" << endl;
-        students[studentCount] = createStudent(useMedian);
-        studentCount++;
         
-        cout << "\nAdd another student? (y/n): ";
-        cin >> continueInput;
+        switch (choice) {
+            case 1:
+                students[studentCount] = createStudentManual(useMedian);
+                break;
+            case 2:
+                students[studentCount] = createStudentRandomGrades(useMedian);
+                break;
+            case 3:
+                students[studentCount] = createStudentFullyRandom(useMedian);
+                break;
+        }
+        
+        studentCount++;
     }
 
     string headerLabel = useMedian ? "Final (Med.)" : "Final (Avg.)";
