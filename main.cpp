@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include "student.h"
+#include "student-vector.h"
 
 using std::cout;
 using std::cin;
@@ -48,16 +48,18 @@ Student createStudent(bool useMedian) {
     cout << "Enter exam grade: ";
     cin >> student.examGrade;
 
-    int homeworkCount;
-
-    cout << "Enter number of homework grades: ";
-    cin >> homeworkCount;
+    char continueHomework = 'y';
+    int homeworkNumber = 1;
     
-    for (int i = 0; i < homeworkCount; i++) {
-        cout << "Enter homework grade " << (i + 1) << ": ";
+    while (continueHomework == 'y' || continueHomework == 'Y') {
+        cout << "Enter homework grade " << homeworkNumber << ": ";
         int grade;
         cin >> grade;
         student.homeworkGrades.push_back(grade);
+        homeworkNumber++;
+        
+        cout << "Add another homework grade? (y/n): ";
+        cin >> continueHomework;
     }
     
     if (useMedian) {
@@ -70,12 +72,8 @@ Student createStudent(bool useMedian) {
 }
 
 int main() {
-    int studentCount;
     char calculationType;
     bool useMedian;
-
-    cout << "Enter number of students: ";
-    cin >> studentCount;
     
     cout << "Use median (m) or average (a) for final grade calculation? ";
     cin >> calculationType;
@@ -83,9 +81,16 @@ int main() {
 
     vector<Student> students;
 
-    for (int i = 0; i < studentCount; i++) {
-        cout << "\n--- Student " << (i + 1) << " ---" << endl;
+    char continueInput = 'y';
+    int studentNumber = 1;
+
+    while (continueInput == 'y' || continueInput == 'Y') {
+        cout << "\n--- Student " << studentNumber << " ---" << endl;
         students.push_back(createStudent(useMedian));
+        studentNumber++;
+        
+        cout << "\nAdd another student? (y/n): ";
+        cin >> continueInput;
     }
 
     string headerLabel = useMedian ? "Final (Med.)" : "Final (Avg.)";
@@ -96,7 +101,7 @@ int main() {
          << headerLabel << endl;
     cout << string(52, '-') << endl;
     
-    for (int i = 0; i < studentCount; i++) {
+    for (int i = 0; i < students.size(); i++) {
         cout << left << setw(20) << students[i].name 
              << setw(20) << students[i].surname 
              << std::fixed << std::setprecision(2) << students[i].finalGrade << endl;
