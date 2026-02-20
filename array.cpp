@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include "student-vector.h"
+#include "student-array.h"
 
 using std::cout;
 using std::cin;
@@ -10,29 +10,32 @@ using std::setw;
 using std::left;
 using std::string;
 
-double calculateFinalGradeAverage(vector<int> homeworkGrades, int examGrade) {
+double calculateFinalGradeAverage(int* homeworkGrades, int count, int examGrade) {
     double homeworkGradeSum = 0;
 
-    for (int i = 0; i < homeworkGrades.size(); i++) {
+    for (int i = 0; i < count; i++) {
         homeworkGradeSum += homeworkGrades[i];
     }
 
-    return homeworkGradeSum / homeworkGrades.size() * 0.4 + examGrade * 0.6;
+    return homeworkGradeSum / count * 0.4 + examGrade * 0.6;
 }
 
-double calculateFinalGradeMedian(vector<int> homeworkGrades, int examGrade) {
-    vector<int> sortedGrades = homeworkGrades;
-    std::sort(sortedGrades.begin(), sortedGrades.end());
+double calculateFinalGradeMedian(int* homeworkGrades, int count, int examGrade) {
+    int* sortedGrades = new int[count];
+    for (int i = 0; i < count; i++) {
+        sortedGrades[i] = homeworkGrades[i];
+    }
+    std::sort(sortedGrades, sortedGrades + count);
     
     double median;
-    int size = sortedGrades.size();
     
-    if (size % 2 == 0) {
-        median = (sortedGrades[size / 2 - 1] + sortedGrades[size / 2]) / 2.0;
+    if (count % 2 == 0) {
+        median = (sortedGrades[count / 2 - 1] + sortedGrades[count / 2]) / 2.0;
     } else {
-        median = sortedGrades[size / 2];
+        median = sortedGrades[count / 2];
     }
     
+    delete[] sortedGrades;
     return median * 0.4 + examGrade * 0.6;
 }
 
@@ -48,24 +51,35 @@ Student createStudent(bool useMedian) {
     cout << "Enter exam grade: ";
     cin >> student.examGrade;
 
+    int capacity = 10;
+    student.homeworkGrades = new int[capacity];
+    student.homeworkCount = 0;
+    
     char continueHomework = 'y';
-    int homeworkNumber = 1;
     
     while (continueHomework == 'y' || continueHomework == 'Y') {
-        cout << "Enter homework grade " << homeworkNumber << ": ";
-        int grade;
-        cin >> grade;
-        student.homeworkGrades.push_back(grade);
-        homeworkNumber++;
+        if (student.homeworkCount >= capacity) {
+            capacity *= 2;
+            int* newArray = new int[capacity];
+            for (int i = 0; i < student.homeworkCount; i++) {
+                newArray[i] = student.homeworkGrades[i];
+            }
+            delete[] student.homeworkGrades;
+            student.homeworkGrades = newArray;
+        }
+        
+        cout << "Enter homework grade " << (student.homeworkCount + 1) << ": ";
+        cin >> student.homeworkGrades[student.homeworkCount];
+        student.homeworkCount++;
         
         cout << "Add another homework grade? (y/n): ";
         cin >> continueHomework;
     }
     
     if (useMedian) {
-        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
+        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.homeworkCount, student.examGrade);
     } else {
-        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
+        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.homeworkCount, student.examGrade);
     }
     
     return student;
@@ -79,15 +93,26 @@ int main() {
     cin >> calculationType;
     useMedian = (calculationType == 'm' || calculationType == 'M');
 
-    vector<Student> students;
+    int capacity = 10;
+    Student* students = new Student[capacity];
+    int studentCount = 0;
 
     char continueInput = 'y';
-    int studentNumber = 1;
 
     while (continueInput == 'y' || continueInput == 'Y') {
-        cout << "\n--- Student " << studentNumber << " ---" << endl;
-        students.push_back(createStudent(useMedian));
-        studentNumber++;
+        if (studentCount >= capacity) {
+            capacity *= 2;
+            Student* newArray = new Student[capacity];
+            for (int i = 0; i < studentCount; i++) {
+                newArray[i] = students[i];
+            }
+            delete[] students;
+            students = newArray;
+        }
+        
+        cout << "\n--- Student " << (studentCount + 1) << " ---" << endl;
+        students[studentCount] = createStudent(useMedian);
+        studentCount++;
         
         cout << "\nAdd another student? (y/n): ";
         cin >> continueInput;
@@ -101,12 +126,17 @@ int main() {
          << headerLabel << endl;
     cout << string(52, '-') << endl;
     
-    for (int i = 0; i < students.size(); i++) {
+    for (int i = 0; i < studentCount; i++) {
         cout << left << setw(20) << students[i].name 
              << setw(20) << students[i].surname 
              << std::fixed << std::setprecision(2) << students[i].finalGrade << endl;
     }
     cout << string(52, '=') << endl;
+
+    for (int i = 0; i < studentCount; i++) {
+        delete[] students[i].homeworkGrades;
+    }
+    delete[] students;
 
     return 0;
 }
