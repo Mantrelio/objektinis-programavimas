@@ -47,6 +47,26 @@ double calculateFinalGradeMedian(vector<int> homeworkGrades, int examGrade) {
     return median * 0.4 + examGrade * 0.6;
 }
 
+void printResults(const vector<Student>& students, std::ostream& out) {
+    out << "\n" << string(70, '=') << endl;
+    out << left << setw(20) << "Name" 
+        << setw(20) << "Surname" 
+        << setw(15) << "Final (Avg.)"
+        << setw(15) << "Final (Med.)" << endl;
+    out << string(70, '-') << endl;
+    
+    for (int i = 0; i < students.size(); i++) {
+        double finalAvg = calculateFinalGradeAverage(students[i].homeworkGrades, students[i].examGrade);
+        double finalMed = calculateFinalGradeMedian(students[i].homeworkGrades, students[i].examGrade);
+
+        out << left << setw(20) << students[i].name 
+            << setw(20) << students[i].surname 
+            << std::fixed << std::setprecision(2) << setw(15) << finalAvg
+            << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
+    }
+    out << string(70, '=') << endl;
+}
+
 Student createStudentManual() {
     Student student = Student();
 
@@ -164,21 +184,47 @@ vector<Student> createStudentsFromFile(const string& filename) {
     return studentsFromFile;
 }
 
-int main() {
-    srand(time(0));
+void showMainMenu() {
+    cout << "\n=== MENU ===" << endl;
+    cout << "1 - Manual input (enter all values)" << endl;
+    cout << "2 - Enter name/surname, generate grades" << endl;
+    cout << "3 - Generate all data randomly" << endl;
+    cout << "4 - Read students from file" << endl;
+    cout << "5 - Exit and show results" << endl;
+    cout << "Choose option: ";
+}
 
-    vector<Student> students;
+void handleMenuChoice(int choice, vector<Student>& students) {
+    switch (choice) {
+        case 1:
+            cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
+            students.push_back(createStudentManual());
+            break;
+        case 2:
+            cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
+            students.push_back(createStudentRandomGrades());
+            break;
+        case 3:
+            cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
+            students.push_back(createStudentFullyRandom());
+            break;
+        case 4: {
+            string filename;
+            cout << "Enter file name (e.g. data.txt): ";
+            cin >> filename;
+            vector<Student> fileStudents = createStudentsFromFile(filename);
+            cout << "Loaded " << fileStudents.size() << " students from file." << endl;
+            students.insert(students.end(), fileStudents.begin(), fileStudents.end());
+            break;
+        }
+    }
+}
 
+void collectStudents(vector<Student>& students) {
     int choice = 0;
 
     while (choice != 5) {
-        cout << "\n=== MENU ===" << endl;
-        cout << "1 - Manual input (enter all values)" << endl;
-        cout << "2 - Enter name/surname, generate grades" << endl;
-        cout << "3 - Generate all data randomly" << endl;
-        cout << "4 - Read students from file" << endl;
-        cout << "5 - Exit and show results" << endl;
-        cout << "Choose option: ";
+        showMainMenu();
         cin >> choice;
         
         if (choice == 5) break;
@@ -188,48 +234,48 @@ int main() {
             continue;
         }
         
-        switch (choice) {
-            case 1:
-                cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-                students.push_back(createStudentManual());
-                break;
-            case 2:
-                cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-                students.push_back(createStudentRandomGrades());
-                break;
-            case 3:
-                cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-                students.push_back(createStudentFullyRandom());
-                break;
-            case 4: {
-                string filename;
-                cout << "Enter file name (e.g. data.txt): ";
-                cin >> filename;
-                vector<Student> fileStudents = createStudentsFromFile(filename);
-                cout << "Loaded " << fileStudents.size() << " students from file." << endl;
-                students.insert(students.end(), fileStudents.begin(), fileStudents.end());
-                break;
-            }
+        handleMenuChoice(choice, students);
+    }
+}
+
+void chooseOutputAndPrint(const vector<Student>& students) {
+    if (students.empty()) {
+        cout << "No students to display." << endl;
+        return;
+    }
+
+    int outputChoice = 0;
+    cout << "\nChoose output method:" << endl;
+    cout << "1 - Show results in console" << endl;
+    cout << "2 - Save results to text file" << endl;
+    cout << "Choice: ";
+    cin >> outputChoice;
+
+    if (outputChoice == 2) {
+        string outFilename;
+        cout << "Enter output filename (e.g. results.txt): ";
+        cin >> outFilename;
+
+        std::ofstream outFile(outFilename);
+        if (!outFile) {
+            cout << "Failed to open output file. Showing results in console instead." << endl;
+            printResults(students, cout);
+        } else {
+            printResults(students, outFile);
+            cout << "Results saved to " << outFilename << endl;
         }
+    } else {
+        printResults(students, cout);
     }
+}
 
-    cout << "\n" << string(70, '=') << endl;
-    cout << left << setw(20) << "Name" 
-         << setw(20) << "Surname" 
-         << setw(15) << "Final (Avg.)"
-         << setw(15) << "Final (Med.)" << endl;
-    cout << string(70, '-') << endl;
-    
-    for (int i = 0; i < students.size(); i++) {
-        double finalAvg = calculateFinalGradeAverage(students[i].homeworkGrades, students[i].examGrade);
-        double finalMed = calculateFinalGradeMedian(students[i].homeworkGrades, students[i].examGrade);
+int main() {
+    srand(time(0));
 
-        cout << left << setw(20) << students[i].name 
-             << setw(20) << students[i].surname 
-             << std::fixed << std::setprecision(2) << setw(15) << finalAvg
-             << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
-    }
-    cout << string(70, '=') << endl;
+    vector<Student> students;
+
+    collectStudents(students);
+    chooseOutputAndPrint(students);
 
     return 0;
 }
