@@ -47,7 +47,7 @@ double calculateFinalGradeMedian(vector<int> homeworkGrades, int examGrade) {
     return median * 0.4 + examGrade * 0.6;
 }
 
-Student createStudentManual(bool useMedian) {
+Student createStudentManual() {
     Student student = Student();
 
     cout << "Enter student name: ";
@@ -73,16 +73,10 @@ Student createStudentManual(bool useMedian) {
         cin >> continueHomework;
     }
     
-    if (useMedian) {
-        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
-    } else {
-        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
-    }
-    
     return student;
 }
 
-Student createStudentRandomGrades(bool useMedian) {
+Student createStudentRandomGrades() {
     Student student = Student();
 
     cout << "Enter student name: ";
@@ -105,16 +99,10 @@ Student createStudentRandomGrades(bool useMedian) {
     }
     cout << endl;
     
-    if (useMedian) {
-        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
-    } else {
-        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
-    }
-    
     return student;
 }
 
-Student createStudentFullyRandom(bool useMedian) {
+Student createStudentFullyRandom() {
     Student student = Student();
 
     student.name = randomName();
@@ -127,18 +115,12 @@ Student createStudentFullyRandom(bool useMedian) {
         student.homeworkGrades.push_back(randomGrade());
     }
     
-    if (useMedian) {
-        student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
-    } else {
-        student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
-    }
-    
     cout << "Generated student: " << student.name << " " << student.surname << endl;
     
     return student;
 }
 
-vector<Student> createStudentsFromFile(const string& filename, bool useMedian) {
+vector<Student> createStudentsFromFile(const string& filename) {
     vector<Student> studentsFromFile;
     std::ifstream in(filename);
 
@@ -176,12 +158,6 @@ vector<Student> createStudentsFromFile(const string& filename, bool useMedian) {
         allGrades.pop_back();
         student.homeworkGrades = allGrades;
 
-        if (useMedian) {
-            student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
-        } else {
-            student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
-        }
-
         studentsFromFile.push_back(student);
     }
 
@@ -190,13 +166,6 @@ vector<Student> createStudentsFromFile(const string& filename, bool useMedian) {
 
 int main() {
     srand(time(0));
-    
-    char calculationType;
-    bool useMedian;
-    
-    cout << "Use median (m) or average (a) for final grade calculation? ";
-    cin >> calculationType;
-    useMedian = (calculationType == 'm' || calculationType == 'M');
 
     vector<Student> students;
 
@@ -222,21 +191,21 @@ int main() {
         switch (choice) {
             case 1:
                 cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-                students.push_back(createStudentManual(useMedian));
+                students.push_back(createStudentManual());
                 break;
             case 2:
                 cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-                students.push_back(createStudentRandomGrades(useMedian));
+                students.push_back(createStudentRandomGrades());
                 break;
             case 3:
                 cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-                students.push_back(createStudentFullyRandom(useMedian));
+                students.push_back(createStudentFullyRandom());
                 break;
             case 4: {
                 string filename;
                 cout << "Enter file name (e.g. data.txt): ";
                 cin >> filename;
-                vector<Student> fileStudents = createStudentsFromFile(filename, useMedian);
+                vector<Student> fileStudents = createStudentsFromFile(filename);
                 cout << "Loaded " << fileStudents.size() << " students from file." << endl;
                 students.insert(students.end(), fileStudents.begin(), fileStudents.end());
                 break;
@@ -244,20 +213,23 @@ int main() {
         }
     }
 
-    string headerLabel = useMedian ? "Final (Med.)" : "Final (Avg.)";
-    
-    cout << "\n" << string(52, '=') << endl;
+    cout << "\n" << string(70, '=') << endl;
     cout << left << setw(20) << "Name" 
          << setw(20) << "Surname" 
-         << headerLabel << endl;
-    cout << string(52, '-') << endl;
+         << setw(15) << "Final (Avg.)"
+         << setw(15) << "Final (Med.)" << endl;
+    cout << string(70, '-') << endl;
     
     for (int i = 0; i < students.size(); i++) {
+        double finalAvg = calculateFinalGradeAverage(students[i].homeworkGrades, students[i].examGrade);
+        double finalMed = calculateFinalGradeMedian(students[i].homeworkGrades, students[i].examGrade);
+
         cout << left << setw(20) << students[i].name 
              << setw(20) << students[i].surname 
-             << std::fixed << std::setprecision(2) << students[i].finalGrade << endl;
+             << std::fixed << std::setprecision(2) << setw(15) << finalAvg
+             << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
     }
-    cout << string(52, '=') << endl;
+    cout << string(70, '=') << endl;
 
     return 0;
 }

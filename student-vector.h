@@ -14,5 +14,4 @@ struct Student {
     string name, surname;
     vector<int> homeworkGrades;
     int examGrade;
-    float finalGrade;
 };
