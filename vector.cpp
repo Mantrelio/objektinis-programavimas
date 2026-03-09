@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <sstream>
 #include "student-vector.h"
 
 int randomGrade(int min = 1, int max = 10) {
@@ -136,6 +138,56 @@ Student createStudentFullyRandom(bool useMedian) {
     return student;
 }
 
+vector<Student> createStudentsFromFile(const string& filename, bool useMedian) {
+    vector<Student> studentsFromFile;
+    std::ifstream in(filename);
+
+    if (!in) {
+        cout << "Failed to open file: " << filename << endl;
+        return studentsFromFile;
+    }
+
+    string headerLine;
+    std::getline(in, headerLine);
+
+    string line;
+    while (std::getline(in, line)) {
+        if (line.empty()) continue;
+
+        std::istringstream iss(line);
+        Student student;
+        student.homeworkGrades.clear();
+
+        if (!(iss >> student.name >> student.surname)) {
+            continue; 
+        }
+
+        int grade;
+        vector<int> allGrades;
+        while (iss >> grade) {
+            allGrades.push_back(grade);
+        }
+
+        if (allGrades.empty()) {
+            continue; 
+        }
+
+        student.examGrade = allGrades.back();
+        allGrades.pop_back();
+        student.homeworkGrades = allGrades;
+
+        if (useMedian) {
+            student.finalGrade = calculateFinalGradeMedian(student.homeworkGrades, student.examGrade);
+        } else {
+            student.finalGrade = calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
+        }
+
+        studentsFromFile.push_back(student);
+    }
+
+    return studentsFromFile;
+}
+
 int main() {
     srand(time(0));
     
@@ -150,34 +202,45 @@ int main() {
 
     int choice = 0;
 
-    while (choice != 4) {
+    while (choice != 5) {
         cout << "\n=== MENU ===" << endl;
         cout << "1 - Manual input (enter all values)" << endl;
         cout << "2 - Enter name/surname, generate grades" << endl;
         cout << "3 - Generate all data randomly" << endl;
-        cout << "4 - Exit and show results" << endl;
+        cout << "4 - Read students from file" << endl;
+        cout << "5 - Exit and show results" << endl;
         cout << "Choose option: ";
         cin >> choice;
         
-        if (choice == 4) break;
+        if (choice == 5) break;
         
-        if (choice < 1 || choice > 4) {
+        if (choice < 1 || choice > 5) {
             cout << "Invalid option. Please try again." << endl;
             continue;
         }
         
-        cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
-        
         switch (choice) {
             case 1:
+                cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
                 students.push_back(createStudentManual(useMedian));
                 break;
             case 2:
+                cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
                 students.push_back(createStudentRandomGrades(useMedian));
                 break;
             case 3:
+                cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
                 students.push_back(createStudentFullyRandom(useMedian));
                 break;
+            case 4: {
+                string filename;
+                cout << "Enter file name (e.g. data.txt): ";
+                cin >> filename;
+                vector<Student> fileStudents = createStudentsFromFile(filename, useMedian);
+                cout << "Loaded " << fileStudents.size() << " students from file." << endl;
+                students.insert(students.end(), fileStudents.begin(), fileStudents.end());
+                break;
+            }
         }
     }
 
