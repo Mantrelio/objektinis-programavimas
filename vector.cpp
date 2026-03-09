@@ -5,13 +5,6 @@
 #include <ctime>
 #include "student-vector.h"
 
-using std::cout;
-using std::cin;
-using std::endl;
-using std::setw;
-using std::left;
-using std::string;
-
 int randomGrade(int min = 1, int max = 10) {
     return rand() % (max - min + 1) + min;
 }

@@ -4,6 +4,11 @@
 
 using std::string;
 using std::vector;
+using std::cout;
+using std::cin;
+using std::endl;
+using std::setw;
+using std::left;
 
 struct Student {
     string name, surname;
