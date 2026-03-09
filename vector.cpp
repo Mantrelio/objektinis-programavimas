@@ -49,20 +49,20 @@ double calculateFinalGradeMedian(vector<int> homeworkGrades, int examGrade) {
 
 void printResults(const vector<Student>& students, std::ostream& out) {
     out << "\n" << string(70, '=') << endl;
-    out << left << setw(20) << "Name" 
-        << setw(20) << "Surname" 
-        << setw(15) << "Final (Avg.)"
-        << setw(15) << "Final (Med.)" << endl;
+    out << left  << setw(20) << "Name" 
+        << left  << setw(20) << "Surname" 
+        << right << setw(15) << "Final (Avg.)"
+        << right << setw(15) << "Final (Med.)" << endl;
     out << string(70, '-') << endl;
     
     for (int i = 0; i < students.size(); i++) {
         double finalAvg = calculateFinalGradeAverage(students[i].homeworkGrades, students[i].examGrade);
         double finalMed = calculateFinalGradeMedian(students[i].homeworkGrades, students[i].examGrade);
 
-        out << left << setw(20) << students[i].name 
-            << setw(20) << students[i].surname 
-            << std::fixed << std::setprecision(2) << setw(15) << finalAvg
-            << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
+        out << left  << setw(20) << students[i].name 
+            << left  << setw(20) << students[i].surname 
+            << right << std::fixed << std::setprecision(2) << setw(15) << finalAvg
+            << right << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
     }
     out << string(70, '=') << endl;
 }
@@ -238,11 +238,55 @@ void collectStudents(vector<Student>& students) {
     }
 }
 
-void chooseOutputAndPrint(const vector<Student>& students) {
-    if (students.empty()) {
-        cout << "No students to display." << endl;
-        return;
+vector<Student> chooseSorting(const vector<Student>& students) {
+    int sortChoice = 0;
+    cout << "\nChoose sorting option:" << endl;
+    cout << "0 - Unsorted (original order)" << endl;
+    cout << "1 - By name" << endl;
+    cout << "2 - By surname" << endl;
+    cout << "3 - By final average" << endl;
+    cout << "4 - By final median" << endl;
+    cout << "Choice: ";
+    cin >> sortChoice;
+
+    vector<Student> resultStudents = students;
+
+    if (sortChoice == 0) {
+        cout << "Showing unsorted results (original order)." << endl;
+    } else if (sortChoice >= 1 && sortChoice <= 4) {
+        std::sort(resultStudents.begin(), resultStudents.end(),
+            [sortChoice](const Student& a, const Student& b) {
+                switch (sortChoice) {
+                    case 1: 
+                        if (a.name == b.name) return a.surname < b.surname;
+                        return a.name < b.name;
+                    case 2: 
+                        if (a.surname == b.surname) return a.name < b.name;
+                        return a.surname < b.surname;
+                    case 3: {
+                        double fa = calculateFinalGradeAverage(a.homeworkGrades, a.examGrade);
+                        double fb = calculateFinalGradeAverage(b.homeworkGrades, b.examGrade);
+                        return fa < fb;
+                    }
+                    case 4: {
+                        double fa = calculateFinalGradeMedian(a.homeworkGrades, a.examGrade);
+                        double fb = calculateFinalGradeMedian(b.homeworkGrades, b.examGrade);
+                        return fa < fb;
+                    }
+                    default:
+                        return a.name < b.name;
+                }
+            }
+        );
+    } else {
+        cout << "Invalid sorting option. Showing unsorted results (original order)." << endl;
     }
+
+    return resultStudents;
+}
+
+void outputResults(const vector<Student>& students) {
+    const vector<Student>& resultStudents = students;
 
     int outputChoice = 0;
     cout << "\nChoose output method:" << endl;
@@ -259,14 +303,24 @@ void chooseOutputAndPrint(const vector<Student>& students) {
         std::ofstream outFile(outFilename);
         if (!outFile) {
             cout << "Failed to open output file. Showing results in console instead." << endl;
-            printResults(students, cout);
+            printResults(resultStudents, cout);
         } else {
-            printResults(students, outFile);
+            printResults(resultStudents, outFile);
             cout << "Results saved to " << outFilename << endl;
         }
     } else {
-        printResults(students, cout);
+        printResults(resultStudents, cout);
     }
+}
+
+void chooseOutputAndPrint(const vector<Student>& students) {
+    if (students.empty()) {
+        cout << "No students to display." << endl;
+        return;
+    }
+
+    vector<Student> resultStudents = chooseSorting(students);
+    outputResults(resultStudents);
 }
 
 int main() {

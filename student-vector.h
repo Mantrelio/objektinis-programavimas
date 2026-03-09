@@ -9,6 +9,7 @@ using std::cin;
 using std::endl;
 using std::setw;
 using std::left;
+using std::right;
 
 struct Student {
     string name, surname;
