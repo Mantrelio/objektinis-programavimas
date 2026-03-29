@@ -231,14 +231,20 @@ void split_protingi_kvaili() {
             throw std::runtime_error(
                 "nepavyko atidaryti failo rašymui (kelias arba teisės)");
         }
+        const auto tWrite0 = std::chrono::steady_clock::now();
         printResults(protingiOut, protingiFile);
         printResults(kvailiOut, kvailiFile);
         protingiFile.flush();
         kvailiFile.flush();
+        const auto tWrite1 = std::chrono::steady_clock::now();
         if (!protingiFile || !kvailiFile) {
             throw std::runtime_error(
                 "rašymas nepavyko (diskas pilnas arba įvesties/išvesties klaida)");
         }
+        const double writeSeparateFilesSec =
+            std::chrono::duration<double>(tWrite1 - tWrite0).count();
+        cout << "Time elapsed (write to separate files): " << std::fixed
+             << std::setprecision(3) << writeSeparateFilesSec << " s" << endl;
         cout << "Protingi saved to " << protingiFilename << endl;
         cout << "Kvaili saved to " << kvailiFilename << endl;
     } catch (const std::exception& e) {
