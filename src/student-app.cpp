@@ -103,9 +103,8 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             students.push_back(createStudentFullyRandom());
             break;
         case 4: {
-            string filename;
-            cout << "Enter file name (e.g. data.txt): ";
-            cin >> filename;
+            const string filename =
+                read_required_line(cin, cout, "Enter file name (e.g. data.txt): ");
             try {
                 const vector<Student> fileStudents = createStudentsFromFile(filename);
                 if (fileStudents.empty()) {
@@ -172,9 +171,8 @@ void outputResults(const vector<Student>& students) {
     outputChoice = read_int_in_range(cin, cout, "", 1, 2);
 
     if (outputChoice == 2) {
-        string outFilename;
-        cout << "Enter output filename (e.g. results.txt): ";
-        cin >> outFilename;
+        const string outFilename =
+            read_required_line(cin, cout, "Enter output filename (e.g. results.txt): ");
 
         try {
             std::ofstream outFile(outFilename);

@@ -6,17 +6,15 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 
 namespace {
 
 void promptNameAndSurname(Student& student) {
-    cout << "Enter student name: ";
-    cin >> student.name;
-
-    cout << "Enter student surname: ";
-    cin >> student.surname;
+    student.name = read_required_line(cin, cout, "Enter student name: ");
+    student.surname = read_required_line(cin, cout, "Enter student surname: ");
 }
 
 void readHomeworkGradesInteractive(Student& student) {
@@ -31,6 +29,7 @@ void readHomeworkGradesInteractive(Student& student) {
 
         cout << "Add another homework grade? (y/n): ";
         cin >> continueHomework;
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
