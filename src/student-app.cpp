@@ -8,24 +8,70 @@
 #include <iomanip>
 #include <iostream>
 
-void printResults(const vector<Student>& students, std::ostream& out) {
+namespace {
+
+void printTableHeader(std::ostream& out) {
     out << "\n" << string(70, '=') << endl;
     out << left << setw(20) << "Name"
         << left << setw(20) << "Surname"
         << right << setw(15) << "Final (Avg.)"
         << right << setw(15) << "Final (Med.)" << endl;
     out << string(70, '-') << endl;
+}
 
-    for (const Student& s : students) {
-        double finalAvg = calculateFinalGradeAverage(s.homeworkGrades, s.examGrade);
-        double finalMed = calculateFinalGradeMedian(s.homeworkGrades, s.examGrade);
-
-        out << left << setw(20) << s.name
-            << left << setw(20) << s.surname
-            << right << std::fixed << std::setprecision(2) << setw(15) << finalAvg
-            << right << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
-    }
+void printTableFooter(std::ostream& out) {
     out << string(70, '=') << endl;
+}
+
+void printStudentRow(std::ostream& out, const Student& s) {
+    const double finalAvg = calculateFinalGradeAverage(s.homeworkGrades, s.examGrade);
+    const double finalMed = calculateFinalGradeMedian(s.homeworkGrades, s.examGrade);
+
+    out << left << setw(20) << s.name
+        << left << setw(20) << s.surname
+        << right << std::fixed << std::setprecision(2) << setw(15) << finalAvg
+        << right << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
+}
+
+bool compareStudentsForSort(int sortChoice, const Student& a, const Student& b) {
+    switch (sortChoice) {
+        case 1:
+            if (a.name == b.name) {
+                return a.surname < b.surname;
+            }
+            return a.name < b.name;
+        case 2:
+            if (a.surname == b.surname) {
+                return a.name < b.name;
+            }
+            return a.surname < b.surname;
+        case 3: {
+            const double fa = calculateFinalGradeAverage(a.homeworkGrades, a.examGrade);
+            const double fb = calculateFinalGradeAverage(b.homeworkGrades, b.examGrade);
+            return fa < fb;
+        }
+        case 4: {
+            const double fa = calculateFinalGradeMedian(a.homeworkGrades, a.examGrade);
+            const double fb = calculateFinalGradeMedian(b.homeworkGrades, b.examGrade);
+            return fa < fb;
+        }
+        default:
+            return a.name < b.name;
+    }
+}
+
+void announceNextStudent(std::size_t studentIndex) {
+    cout << "\n--- Student " << studentIndex << " ---" << endl;
+}
+
+}  // namespace
+
+void printResults(const vector<Student>& students, std::ostream& out) {
+    printTableHeader(out);
+    for (const Student& s : students) {
+        printStudentRow(out, s);
+    }
+    printTableFooter(out);
 }
 
 void showMainMenu() {
@@ -39,24 +85,26 @@ void showMainMenu() {
 }
 
 void handleMenuChoice(int choice, vector<Student>& students) {
+    const std::size_t nextIndex = students.size() + 1;
+
     switch (choice) {
         case 1:
-            cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
+            announceNextStudent(nextIndex);
             students.push_back(createStudentManual());
             break;
         case 2:
-            cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
+            announceNextStudent(nextIndex);
             students.push_back(createStudentRandomGrades());
             break;
         case 3:
-            cout << "\n--- Student " << (students.size() + 1) << " ---" << endl;
+            announceNextStudent(nextIndex);
             students.push_back(createStudentFullyRandom());
             break;
         case 4: {
             string filename;
             cout << "Enter file name (e.g. data.txt): ";
             cin >> filename;
-            vector<Student> fileStudents = createStudentsFromFile(filename);
+            const vector<Student> fileStudents = createStudentsFromFile(filename);
             cout << "Loaded " << fileStudents.size() << " students from file." << endl;
             students.insert(students.end(), fileStudents.begin(), fileStudents.end());
             break;
@@ -71,7 +119,9 @@ void collectStudents(vector<Student>& students) {
         showMainMenu();
         cin >> choice;
 
-        if (choice == 5) break;
+        if (choice == 5) {
+            break;
+        }
 
         if (choice < 1 || choice > 5) {
             cout << "Invalid option. Please try again." << endl;
@@ -100,28 +150,8 @@ vector<Student> chooseSorting(const vector<Student>& students) {
     } else if (sortChoice >= 1 && sortChoice <= 4) {
         std::sort(resultStudents.begin(), resultStudents.end(),
             [sortChoice](const Student& a, const Student& b) {
-                switch (sortChoice) {
-                    case 1:
-                        if (a.name == b.name) return a.surname < b.surname;
-                        return a.name < b.name;
-                    case 2:
-                        if (a.surname == b.surname) return a.name < b.name;
-                        return a.surname < b.surname;
-                    case 3: {
-                        double fa = calculateFinalGradeAverage(a.homeworkGrades, a.examGrade);
-                        double fb = calculateFinalGradeAverage(b.homeworkGrades, b.examGrade);
-                        return fa < fb;
-                    }
-                    case 4: {
-                        double fa = calculateFinalGradeMedian(a.homeworkGrades, a.examGrade);
-                        double fb = calculateFinalGradeMedian(b.homeworkGrades, b.examGrade);
-                        return fa < fb;
-                    }
-                    default:
-                        return a.name < b.name;
-                }
-            }
-        );
+                return compareStudentsForSort(sortChoice, a, b);
+            });
     } else {
         cout << "Invalid sorting option. Showing unsorted results (original order)." << endl;
     }
@@ -130,8 +160,6 @@ vector<Student> chooseSorting(const vector<Student>& students) {
 }
 
 void outputResults(const vector<Student>& students) {
-    const vector<Student>& resultStudents = students;
-
     int outputChoice = 0;
     cout << "\nChoose output method:" << endl;
     cout << "1 - Show results in console" << endl;
@@ -147,13 +175,13 @@ void outputResults(const vector<Student>& students) {
         std::ofstream outFile(outFilename);
         if (!outFile) {
             cout << "Failed to open output file. Showing results in console instead." << endl;
-            printResults(resultStudents, cout);
+            printResults(students, cout);
         } else {
-            printResults(resultStudents, outFile);
+            printResults(students, outFile);
             cout << "Results saved to " << outFilename << endl;
         }
     } else {
-        printResults(resultStudents, cout);
+        printResults(students, cout);
     }
 }
 
@@ -163,6 +191,6 @@ void chooseOutputAndPrint(const vector<Student>& students) {
         return;
     }
 
-    vector<Student> resultStudents = chooseSorting(students);
+    const vector<Student> resultStudents = chooseSorting(students);
     outputResults(resultStudents);
 }

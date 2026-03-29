@@ -7,6 +7,84 @@
 #include <iostream>
 #include <sstream>
 
+namespace {
+
+void promptNameAndSurname(Student& student) {
+    cout << "Enter student name: ";
+    cin >> student.name;
+
+    cout << "Enter student surname: ";
+    cin >> student.surname;
+}
+
+void readHomeworkGradesInteractive(Student& student) {
+    char continueHomework = 'y';
+    int homeworkNumber = 1;
+
+    while (continueHomework == 'y' || continueHomework == 'Y') {
+        cout << "Enter homework grade " << homeworkNumber << ": ";
+        int grade = 0;
+        cin >> grade;
+        student.homeworkGrades.push_back(grade);
+        homeworkNumber++;
+
+        cout << "Add another homework grade? (y/n): ";
+        cin >> continueHomework;
+    }
+}
+
+int randomHomeworkCount() {
+    return randomGrade(3, 10);
+}
+
+void fillRandomHomeworkGrades(Student& student, int count) {
+    student.homeworkGrades.clear();
+    student.homeworkGrades.reserve(static_cast<std::size_t>(count));
+    for (int i = 0; i < count; i++) {
+        student.homeworkGrades.push_back(randomGrade());
+    }
+}
+
+void printHomeworkGradesList(const Student& student) {
+    const int n = static_cast<int>(student.homeworkGrades.size());
+    for (int i = 0; i < n; i++) {
+        cout << student.homeworkGrades[static_cast<std::size_t>(i)];
+        if (i < n - 1) {
+            cout << ", ";
+        }
+    }
+}
+
+bool parseStudentFromLine(const string& line, Student& student) {
+    if (line.empty()) {
+        return false;
+    }
+
+    std::istringstream iss(line);
+    student.homeworkGrades.clear();
+
+    if (!(iss >> student.name >> student.surname)) {
+        return false;
+    }
+
+    vector<int> allGrades;
+    int grade = 0;
+    while (iss >> grade) {
+        allGrades.push_back(grade);
+    }
+
+    if (allGrades.empty()) {
+        return false;
+    }
+
+    student.examGrade = allGrades.back();
+    allGrades.pop_back();
+    student.homeworkGrades = std::move(allGrades);
+    return true;
+}
+
+}  // namespace
+
 string randomName() {
     const string names[] = {"Jonas", "Petras", "Antanas", "Marija", "Ona", "Jurate", "Tomas", "Mindaugas", "Ruta", "Greta"};
     return names[rand() % 10];
@@ -18,72 +96,44 @@ string randomSurname() {
 }
 
 Student createStudentManual() {
-    Student student = Student();
+    Student student;
 
-    cout << "Enter student name: ";
-    cin >> student.name;
-
-    cout << "Enter student surname: ";
-    cin >> student.surname;
+    promptNameAndSurname(student);
 
     cout << "Enter exam grade: ";
     cin >> student.examGrade;
 
-    char continueHomework = 'y';
-    int homeworkNumber = 1;
-
-    while (continueHomework == 'y' || continueHomework == 'Y') {
-        cout << "Enter homework grade " << homeworkNumber << ": ";
-        int grade;
-        cin >> grade;
-        student.homeworkGrades.push_back(grade);
-        homeworkNumber++;
-
-        cout << "Add another homework grade? (y/n): ";
-        cin >> continueHomework;
-    }
-
+    readHomeworkGradesInteractive(student);
     return student;
 }
 
 Student createStudentRandomGrades() {
-    Student student = Student();
+    Student student;
 
-    cout << "Enter student name: ";
-    cin >> student.name;
-
-    cout << "Enter student surname: ";
-    cin >> student.surname;
+    promptNameAndSurname(student);
 
     student.examGrade = randomGrade();
     cout << "Generated exam grade: " << student.examGrade << endl;
 
-    int homeworkCount = randomGrade(3, 10);
+    const int homeworkCount = randomHomeworkCount();
+    fillRandomHomeworkGrades(student, homeworkCount);
 
     cout << "Generated " << homeworkCount << " homework grades: ";
-    for (int i = 0; i < homeworkCount; i++) {
-        int grade = randomGrade();
-        student.homeworkGrades.push_back(grade);
-        cout << grade;
-        if (i < homeworkCount - 1) cout << ", ";
-    }
+    printHomeworkGradesList(student);
     cout << endl;
 
     return student;
 }
 
 Student createStudentFullyRandom() {
-    Student student = Student();
+    Student student;
 
     student.name = randomName();
     student.surname = randomSurname();
     student.examGrade = randomGrade();
 
-    int homeworkCount = randomGrade(3, 10);
-
-    for (int i = 0; i < homeworkCount; i++) {
-        student.homeworkGrades.push_back(randomGrade());
-    }
+    const int homeworkCount = randomHomeworkCount();
+    fillRandomHomeworkGrades(student, homeworkCount);
 
     cout << "Generated student: " << student.name << " " << student.surname << endl;
 
@@ -104,31 +154,10 @@ vector<Student> createStudentsFromFile(const string& filename) {
 
     string line;
     while (std::getline(in, line)) {
-        if (line.empty()) continue;
-
-        std::istringstream iss(line);
         Student student;
-        student.homeworkGrades.clear();
-
-        if (!(iss >> student.name >> student.surname)) {
-            continue;
+        if (parseStudentFromLine(line, student)) {
+            studentsFromFile.push_back(std::move(student));
         }
-
-        int grade;
-        vector<int> allGrades;
-        while (iss >> grade) {
-            allGrades.push_back(grade);
-        }
-
-        if (allGrades.empty()) {
-            continue;
-        }
-
-        student.examGrade = allGrades.back();
-        allGrades.pop_back();
-        student.homeworkGrades = allGrades;
-
-        studentsFromFile.push_back(student);
     }
 
     return studentsFromFile;

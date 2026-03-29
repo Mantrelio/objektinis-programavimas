@@ -2,32 +2,47 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <numeric>
+
+namespace {
+
+constexpr double k_homework_weight = 0.4;
+constexpr double k_exam_weight = 0.6;
+
+double homeworkAverage(const std::vector<int>& grades) {
+    if (grades.empty()) {
+        return 0.0;
+    }
+    const double sum = std::accumulate(grades.begin(), grades.end(), 0.0);
+    return sum / static_cast<double>(grades.size());
+}
+
+double homeworkMedian(std::vector<int> grades) {
+    if (grades.empty()) {
+        return 0.0;
+    }
+    std::sort(grades.begin(), grades.end());
+    const std::size_t n = grades.size();
+    if (n % 2 == 0) {
+        return (grades[n / 2 - 1] + grades[n / 2]) / 2.0;
+    }
+    return static_cast<double>(grades[n / 2]);
+}
+
+double weightedFinal(double homeworkComponent, int examGrade) {
+    return k_homework_weight * homeworkComponent + k_exam_weight * static_cast<double>(examGrade);
+}
+
+}  // namespace
 
 int randomGrade(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
-double calculateFinalGradeAverage(std::vector<int> homeworkGrades, int examGrade) {
-    double homeworkGradeSum = 0;
-
-    for (int grade : homeworkGrades) {
-        homeworkGradeSum += grade;
-    }
-
-    return homeworkGradeSum / homeworkGrades.size() * 0.4 + examGrade * 0.6;
+double calculateFinalGradeAverage(const std::vector<int>& homeworkGrades, int examGrade) {
+    return weightedFinal(homeworkAverage(homeworkGrades), examGrade);
 }
 
-double calculateFinalGradeMedian(std::vector<int> homeworkGrades, int examGrade) {
-    std::vector<int> sortedGrades = homeworkGrades;
-    std::sort(sortedGrades.begin(), sortedGrades.end());
-
-    const std::size_t n = sortedGrades.size();
-    double median;
-    if (n % 2 == 0) {
-        median = (sortedGrades[n / 2 - 1] + sortedGrades[n / 2]) / 2.0;
-    } else {
-        median = sortedGrades[n / 2];
-    }
-
-    return median * 0.4 + examGrade * 0.6;
+double calculateFinalGradeMedian(const std::vector<int>& homeworkGrades, int examGrade) {
+    return weightedFinal(homeworkMedian(homeworkGrades), examGrade);
 }
