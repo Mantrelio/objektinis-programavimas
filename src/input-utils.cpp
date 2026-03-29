@@ -7,6 +7,21 @@
 
 namespace {
 
+int parse_int_strict(const std::string& line) {
+    std::size_t pos = 0;
+    const long long v = std::stoll(line, &pos, 10);
+    while (pos < line.size() && std::isspace(static_cast<unsigned char>(line[pos]))) {
+        ++pos;
+    }
+    if (pos != line.size()) {
+        throw std::invalid_argument("non-numeric trailing text");
+    }
+    if (v > std::numeric_limits<int>::max() || v < std::numeric_limits<int>::min()) {
+        throw std::out_of_range("value");
+    }
+    return static_cast<int>(v);
+}
+
 std::string read_non_empty_line(std::istream& in) {
     std::string line;
     while (std::getline(in, line)) {
@@ -24,18 +39,7 @@ int read_int(std::istream& in, std::ostream& out, const std::string& prompt) {
         out << prompt;
         try {
             const std::string line = read_non_empty_line(in);
-            std::size_t pos = 0;
-            const long long v = std::stoll(line, &pos, 10);
-            while (pos < line.size() && std::isspace(static_cast<unsigned char>(line[pos]))) {
-                ++pos;
-            }
-            if (pos != line.size()) {
-                throw std::invalid_argument("non-numeric trailing text");
-            }
-            if (v > std::numeric_limits<int>::max() || v < std::numeric_limits<int>::min()) {
-                throw std::out_of_range("value");
-            }
-            return static_cast<int>(v);
+            return parse_int_strict(line);
         } catch (const std::invalid_argument&) {
             out << "Invalid input: please enter a whole number (no letters).\n";
         } catch (const std::out_of_range&) {

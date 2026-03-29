@@ -24,8 +24,8 @@ void readHomeworkGradesInteractive(Student& student) {
     int homeworkNumber = 1;
 
     while (continueHomework == 'y' || continueHomework == 'Y') {
-        const int grade = read_int(cin, cout,
-            "Enter homework grade " + std::to_string(homeworkNumber) + ": ");
+        const int grade = read_int_in_range(cin, cout,
+            "Enter homework grade " + std::to_string(homeworkNumber) + ": ", 1, 10);
         student.homeworkGrades.push_back(grade);
         homeworkNumber++;
 
@@ -101,7 +101,7 @@ Student createStudentManual() {
 
     promptNameAndSurname(student);
 
-    student.examGrade = read_int(cin, cout, "Enter exam grade: ");
+    student.examGrade = read_int_in_range(cin, cout, "Enter exam grade: ", 1, 10);
 
     readHomeworkGradesInteractive(student);
     return student;
