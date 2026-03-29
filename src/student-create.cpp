@@ -1,5 +1,6 @@
 #include "student-create.h"
 
+#include "input-utils.h"
 #include "student-grading.h"
 
 #include <cstdlib>
@@ -23,9 +24,8 @@ void readHomeworkGradesInteractive(Student& student) {
     int homeworkNumber = 1;
 
     while (continueHomework == 'y' || continueHomework == 'Y') {
-        cout << "Enter homework grade " << homeworkNumber << ": ";
-        int grade = 0;
-        cin >> grade;
+        const int grade = read_int(cin, cout,
+            "Enter homework grade " + std::to_string(homeworkNumber) + ": ");
         student.homeworkGrades.push_back(grade);
         homeworkNumber++;
 
@@ -101,8 +101,7 @@ Student createStudentManual() {
 
     promptNameAndSurname(student);
 
-    cout << "Enter exam grade: ";
-    cin >> student.examGrade;
+    student.examGrade = read_int(cin, cout, "Enter exam grade: ");
 
     readHomeworkGradesInteractive(student);
     return student;

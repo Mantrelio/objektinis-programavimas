@@ -1,5 +1,6 @@
 #include "student-app.h"
 
+#include "input-utils.h"
 #include "student-create.h"
 #include "student-grading.h"
 
@@ -127,15 +128,10 @@ void collectStudents(vector<Student>& students) {
 
     while (choice != 5) {
         showMainMenu();
-        cin >> choice;
+        choice = read_int_in_range(cin, cout, "", 1, 5);
 
         if (choice == 5) {
             break;
-        }
-
-        if (choice < 1 || choice > 5) {
-            cout << "Invalid option. Please try again." << endl;
-            continue;
         }
 
         handleMenuChoice(choice, students);
@@ -151,19 +147,17 @@ vector<Student> chooseSorting(const vector<Student>& students) {
     cout << "3 - By final average" << endl;
     cout << "4 - By final median" << endl;
     cout << "Choice: ";
-    cin >> sortChoice;
+    sortChoice = read_int_in_range(cin, cout, "", 0, 4);
 
     vector<Student> resultStudents = students;
 
     if (sortChoice == 0) {
         cout << "Showing unsorted results (original order)." << endl;
-    } else if (sortChoice >= 1 && sortChoice <= 4) {
+    } else {
         std::sort(resultStudents.begin(), resultStudents.end(),
             [sortChoice](const Student& a, const Student& b) {
                 return compareStudentsForSort(sortChoice, a, b);
             });
-    } else {
-        cout << "Invalid sorting option. Showing unsorted results (original order)." << endl;
     }
 
     return resultStudents;
@@ -175,7 +169,7 @@ void outputResults(const vector<Student>& students) {
     cout << "1 - Show results in console" << endl;
     cout << "2 - Save results to text file" << endl;
     cout << "Choice: ";
-    cin >> outputChoice;
+    outputChoice = read_int_in_range(cin, cout, "", 1, 2);
 
     if (outputChoice == 2) {
         string outFilename;
