@@ -111,6 +111,15 @@ bool parseStudentFromLine(const string& line, Student& student) {
     return true;
 }
 
+void fill_student_fully_random(Student& student) {
+    student.name = randomName();
+    student.surname = randomSurname();
+    student.examGrade = randomGrade();
+
+    const int homeworkCount = randomHomeworkCount();
+    fillRandomHomeworkGrades(student, homeworkCount);
+}
+
 }  // namespace
 
 string randomName() {
@@ -154,16 +163,16 @@ Student createStudentRandomGrades() {
 
 Student createStudentFullyRandom() {
     Student student;
-
-    student.name = randomName();
-    student.surname = randomSurname();
-    student.examGrade = randomGrade();
-
-    const int homeworkCount = randomHomeworkCount();
-    fillRandomHomeworkGrades(student, homeworkCount);
+    fill_student_fully_random(student);
 
     cout << "Generated student: " << student.name << " " << student.surname << endl;
 
+    return student;
+}
+
+Student create_student_fully_random_silent() {
+    Student student;
+    fill_student_fully_random(student);
     return student;
 }
 
