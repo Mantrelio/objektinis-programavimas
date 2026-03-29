@@ -33,7 +33,7 @@ void promptNameAndSurname(Student& student) {
             student.name = trim_copy(student.name);
             break;
         }
-        cout << "Name must be a single word (no spaces).\n";
+        cout << "Vardas turi būti vienas žodis (be tarpų).\n";
     }
     while (true) {
         student.surname = read_required_line(cin, cout, "Enter student surname: ");
@@ -41,7 +41,7 @@ void promptNameAndSurname(Student& student) {
             student.surname = trim_copy(student.surname);
             break;
         }
-        cout << "Surname must be a single word (no spaces).\n";
+        cout << "Pavardė turi būti vienas žodis (be tarpų).\n";
     }
 }
 
@@ -171,7 +171,8 @@ vector<Student> createStudentsFromFile(const string& filename) {
     std::ifstream in(filename);
 
     if (!in) {
-        throw std::runtime_error("could not open file for reading (missing path or no permission)");
+        throw std::runtime_error(
+            "nepavyko atidaryti failo skaitymui (kelias neegzistuoja arba nėra teisių)");
     }
 
     vector<Student> studentsFromFile;

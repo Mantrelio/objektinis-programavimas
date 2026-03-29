@@ -108,14 +108,15 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             try {
                 const vector<Student> fileStudents = createStudentsFromFile(filename);
                 if (fileStudents.empty()) {
-                    cout << "File opened, but no valid student rows were found (empty file or bad lines)."
+                    cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
+                            "(tuščias failas arba netinkamos eilutės)."
                          << endl;
                 } else {
                     cout << "Loaded " << fileStudents.size() << " students from file." << endl;
                 }
                 students.insert(students.end(), fileStudents.begin(), fileStudents.end());
             } catch (const std::exception& e) {
-                cout << "Error reading \"" << filename << "\": " << e.what() << endl;
+                cout << "Klaida skaitant „" << filename << "“: " << e.what() << endl;
             }
             break;
         }
@@ -177,17 +178,18 @@ void outputResults(const vector<Student>& students) {
         try {
             std::ofstream outFile(outFilename);
             if (!outFile) {
-                throw std::runtime_error("could not open file for writing (path or permission)");
+                throw std::runtime_error(
+                    "nepavyko atidaryti failo rašymui (kelias arba teisės)");
             }
             printResults(students, outFile);
             outFile.flush();
             if (!outFile) {
-                throw std::runtime_error("write failed (disk full or I/O error)");
+                throw std::runtime_error("rašymas nepavyko (diskas pilnas arba įvesties/išvesties klaida)");
             }
             cout << "Results saved to " << outFilename << endl;
         } catch (const std::exception& e) {
-            cout << "Error writing \"" << outFilename << "\": " << e.what() << endl;
-            cout << "Showing results in console instead." << endl;
+            cout << "Klaida rašant į „" << outFilename << "“: " << e.what() << endl;
+            cout << "Rezultatai rodomi konsolėje." << endl;
             printResults(students, cout);
         }
     } else {
@@ -197,7 +199,7 @@ void outputResults(const vector<Student>& students) {
 
 void chooseOutputAndPrint(const vector<Student>& students) {
     if (students.empty()) {
-        cout << "No students to display." << endl;
+        cout << "Nėra studentų, kuriuos būtų galima rodyti." << endl;
         return;
     }
 

@@ -1,19 +1,16 @@
 #include "input-utils.h"
 
 #include <cctype>
-#include <cstring>
 #include <limits>
 #include <stdexcept>
 #include <string>
 
 namespace {
 
-const char k_empty_line[] = "empty_line";
-
 std::string read_line(std::istream& in) {
     std::string line;
     if (!std::getline(in, line)) {
-        throw std::runtime_error("input ended unexpectedly");
+        throw std::runtime_error("įvestis netikėtai baigėsi");
     }
     return line;
 }
@@ -29,10 +26,10 @@ int parse_int_strict(const std::string& line) {
         ++pos;
     }
     if (pos != line.size()) {
-        throw std::invalid_argument("non-numeric trailing text");
+        throw std::invalid_argument("po skaičiaus liko netinkamas tekstas");
     }
     if (v > std::numeric_limits<int>::max() || v < std::numeric_limits<int>::min()) {
-        throw std::out_of_range("value");
+        throw std::out_of_range("reikšmė");
     }
     return static_cast<int>(v);
 }
@@ -45,17 +42,14 @@ int read_int(std::istream& in, std::ostream& out, const std::string& prompt) {
         try {
             const std::string line = read_line(in);
             if (is_blank(line)) {
-                throw std::invalid_argument(k_empty_line);
+                out << "Įvestis negali būti tuščia.\n";
+                continue;
             }
             return parse_int_strict(line);
-        } catch (const std::invalid_argument& e) {
-            if (std::strcmp(e.what(), k_empty_line) == 0) {
-                out << "Input cannot be empty.\n";
-            } else {
-                out << "Invalid input: please enter a whole number (no letters).\n";
-            }
+        } catch (const std::invalid_argument&) {
+            out << "Netinkama įvestis: įveskite sveikąjį skaičių (be raidžių).\n";
         } catch (const std::out_of_range&) {
-            out << "Number is out of range.\n";
+            out << "Skaičius nepatenka į leidžiamą intervalą.\n";
         }
     }
 }
@@ -67,7 +61,7 @@ int read_int_in_range(std::istream& in, std::ostream& out, const std::string& pr
         if (v >= min && v <= max) {
             return v;
         }
-        out << "Please enter a number between " << min << " and " << max << ".\n";
+        out << "Įveskite skaičių nuo " << min << " iki " << max << ".\n";
     }
 }
 
@@ -78,6 +72,6 @@ std::string read_required_line(std::istream& in, std::ostream& out, const std::s
         if (!is_blank(line)) {
             return line;
         }
-        out << "Input cannot be empty.\n";
+        out << "Įvestis negali būti tuščia.\n";
     }
 }
