@@ -90,6 +90,7 @@ void announceNextStudent(std::size_t studentIndex) {
 }
 
 constexpr int k_max_bulk_random_students = 10'000'000;
+constexpr int k_timing_precision = 6;
 
 void print_kursiokai_header(std::ostream& out) {
     out << left << setw(25) << "Vardas"
@@ -136,8 +137,8 @@ void write_random_students_table_to_file(int count, const string& filename) {
         const double elapsedSec =
             std::chrono::duration<double>(t1 - t0).count();
         cout << "Wrote " << count << " students to " << filename << endl;
-        cout << "Time elapsed: " << std::fixed << std::setprecision(3) << elapsedSec
-             << " s" << endl;
+        cout << "Time elapsed: " << std::fixed << std::setprecision(k_timing_precision)
+             << elapsedSec << " s" << endl;
     } catch (const std::exception& e) {
         cout << "Klaida rašant į „" << filename << "“: " << e.what() << endl;
     }
@@ -179,18 +180,18 @@ void split_protingi_kvaili() {
         }
         cout << "\n--- Timing ---" << endl;
         if (readMeasured) {
-            cout << "Time elapsed (read file): " << std::fixed << std::setprecision(3)
-                 << readSec << " s" << endl;
+            cout << "Time elapsed (read file): " << std::fixed
+                 << std::setprecision(k_timing_precision) << readSec << " s" << endl;
         }
         if (splitMeasured) {
             cout << "Time elapsed (split into Protingi / Kvaili): " << std::fixed
-                 << std::setprecision(3) << splitSec << " s" << endl;
+                 << std::setprecision(k_timing_precision) << splitSec << " s" << endl;
         }
         if (writeMeasured) {
             cout << "Time elapsed (write to separate files): " << std::fixed
-                 << std::setprecision(3) << writeSec << " s" << endl;
+                 << std::setprecision(k_timing_precision) << writeSec << " s" << endl;
         }
-        cout << "Time elapsed (total): " << std::fixed << std::setprecision(3)
+        cout << "Time elapsed (total): " << std::fixed << std::setprecision(k_timing_precision)
              << totalSec << " s" << endl;
     };
 
