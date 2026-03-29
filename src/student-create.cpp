@@ -12,9 +12,37 @@
 
 namespace {
 
+std::string trim_copy(const std::string& s) {
+    const auto start = s.find_first_not_of(" \t\r\f\v");
+    if (start == std::string::npos) {
+        return "";
+    }
+    const auto end = s.find_last_not_of(" \t\r\f\v");
+    return s.substr(start, end - start + 1);
+}
+
+bool is_single_word(const std::string& s) {
+    const std::string t = trim_copy(s);
+    return !t.empty() && t.find_first_of(" \t\r\f\v") == std::string::npos;
+}
+
 void promptNameAndSurname(Student& student) {
-    student.name = read_required_line(cin, cout, "Enter student name: ");
-    student.surname = read_required_line(cin, cout, "Enter student surname: ");
+    while (true) {
+        student.name = read_required_line(cin, cout, "Enter student name: ");
+        if (is_single_word(student.name)) {
+            student.name = trim_copy(student.name);
+            break;
+        }
+        cout << "Name must be a single word (no spaces).\n";
+    }
+    while (true) {
+        student.surname = read_required_line(cin, cout, "Enter student surname: ");
+        if (is_single_word(student.surname)) {
+            student.surname = trim_copy(student.surname);
+            break;
+        }
+        cout << "Surname must be a single word (no spaces).\n";
+    }
 }
 
 void readHomeworkGradesInteractive(Student& student) {
