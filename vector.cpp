@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <cstddef>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
@@ -24,8 +25,8 @@ string randomSurname() {
 double calculateFinalGradeAverage(vector<int> homeworkGrades, int examGrade) {
     double homeworkGradeSum = 0;
 
-    for (int i = 0; i < homeworkGrades.size(); i++) {
-        homeworkGradeSum += homeworkGrades[i];
+    for (int grade : homeworkGrades) {
+        homeworkGradeSum += grade;
     }
 
     return homeworkGradeSum / homeworkGrades.size() * 0.4 + examGrade * 0.6;
@@ -34,33 +35,32 @@ double calculateFinalGradeAverage(vector<int> homeworkGrades, int examGrade) {
 double calculateFinalGradeMedian(vector<int> homeworkGrades, int examGrade) {
     vector<int> sortedGrades = homeworkGrades;
     std::sort(sortedGrades.begin(), sortedGrades.end());
-    
+
+    const std::size_t n = sortedGrades.size();
     double median;
-    int size = sortedGrades.size();
-    
-    if (size % 2 == 0) {
-        median = (sortedGrades[size / 2 - 1] + sortedGrades[size / 2]) / 2.0;
+    if (n % 2 == 0) {
+        median = (sortedGrades[n / 2 - 1] + sortedGrades[n / 2]) / 2.0;
     } else {
-        median = sortedGrades[size / 2];
+        median = sortedGrades[n / 2];
     }
-    
+
     return median * 0.4 + examGrade * 0.6;
 }
 
 void printResults(const vector<Student>& students, std::ostream& out) {
     out << "\n" << string(70, '=') << endl;
-    out << left  << setw(20) << "Name" 
-        << left  << setw(20) << "Surname" 
+    out << left << setw(20) << "Name"
+        << left << setw(20) << "Surname"
         << right << setw(15) << "Final (Avg.)"
         << right << setw(15) << "Final (Med.)" << endl;
     out << string(70, '-') << endl;
-    
-    for (int i = 0; i < students.size(); i++) {
-        double finalAvg = calculateFinalGradeAverage(students[i].homeworkGrades, students[i].examGrade);
-        double finalMed = calculateFinalGradeMedian(students[i].homeworkGrades, students[i].examGrade);
 
-        out << left  << setw(20) << students[i].name 
-            << left  << setw(20) << students[i].surname 
+    for (const Student& s : students) {
+        double finalAvg = calculateFinalGradeAverage(s.homeworkGrades, s.examGrade);
+        double finalMed = calculateFinalGradeMedian(s.homeworkGrades, s.examGrade);
+
+        out << left << setw(20) << s.name
+            << left << setw(20) << s.surname
             << right << std::fixed << std::setprecision(2) << setw(15) << finalAvg
             << right << std::fixed << std::setprecision(2) << setw(15) << finalMed << endl;
     }
@@ -72,27 +72,27 @@ Student createStudentManual() {
 
     cout << "Enter student name: ";
     cin >> student.name;
-    
+
     cout << "Enter student surname: ";
     cin >> student.surname;
-    
+
     cout << "Enter exam grade: ";
     cin >> student.examGrade;
 
     char continueHomework = 'y';
     int homeworkNumber = 1;
-    
+
     while (continueHomework == 'y' || continueHomework == 'Y') {
         cout << "Enter homework grade " << homeworkNumber << ": ";
         int grade;
         cin >> grade;
         student.homeworkGrades.push_back(grade);
         homeworkNumber++;
-        
+
         cout << "Add another homework grade? (y/n): ";
         cin >> continueHomework;
     }
-    
+
     return student;
 }
 
@@ -101,15 +101,15 @@ Student createStudentRandomGrades() {
 
     cout << "Enter student name: ";
     cin >> student.name;
-    
+
     cout << "Enter student surname: ";
     cin >> student.surname;
-    
+
     student.examGrade = randomGrade();
     cout << "Generated exam grade: " << student.examGrade << endl;
 
     int homeworkCount = randomGrade(3, 10);
-    
+
     cout << "Generated " << homeworkCount << " homework grades: ";
     for (int i = 0; i < homeworkCount; i++) {
         int grade = randomGrade();
@@ -118,7 +118,7 @@ Student createStudentRandomGrades() {
         if (i < homeworkCount - 1) cout << ", ";
     }
     cout << endl;
-    
+
     return student;
 }
 
@@ -130,13 +130,13 @@ Student createStudentFullyRandom() {
     student.examGrade = randomGrade();
 
     int homeworkCount = randomGrade(3, 10);
-    
+
     for (int i = 0; i < homeworkCount; i++) {
         student.homeworkGrades.push_back(randomGrade());
     }
-    
+
     cout << "Generated student: " << student.name << " " << student.surname << endl;
-    
+
     return student;
 }
 
@@ -161,7 +161,7 @@ vector<Student> createStudentsFromFile(const string& filename) {
         student.homeworkGrades.clear();
 
         if (!(iss >> student.name >> student.surname)) {
-            continue; 
+            continue;
         }
 
         int grade;
@@ -171,7 +171,7 @@ vector<Student> createStudentsFromFile(const string& filename) {
         }
 
         if (allGrades.empty()) {
-            continue; 
+            continue;
         }
 
         student.examGrade = allGrades.back();
@@ -226,14 +226,14 @@ void collectStudents(vector<Student>& students) {
     while (choice != 5) {
         showMainMenu();
         cin >> choice;
-        
+
         if (choice == 5) break;
-        
+
         if (choice < 1 || choice > 5) {
             cout << "Invalid option. Please try again." << endl;
             continue;
         }
-        
+
         handleMenuChoice(choice, students);
     }
 }
@@ -257,10 +257,10 @@ vector<Student> chooseSorting(const vector<Student>& students) {
         std::sort(resultStudents.begin(), resultStudents.end(),
             [sortChoice](const Student& a, const Student& b) {
                 switch (sortChoice) {
-                    case 1: 
+                    case 1:
                         if (a.name == b.name) return a.surname < b.surname;
                         return a.name < b.name;
-                    case 2: 
+                    case 2:
                         if (a.surname == b.surname) return a.name < b.name;
                         return a.surname < b.surname;
                     case 3: {
