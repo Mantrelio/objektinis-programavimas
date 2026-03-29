@@ -69,6 +69,24 @@ void announceNextStudent(std::size_t studentIndex) {
 
 constexpr int k_max_bulk_random_students = 10'000'000;
 
+void print_kursiokai_header(std::ostream& out) {
+    out << left << setw(25) << "Vardas"
+        << left << setw(25) << "Pavarde";
+    for (int i = 1; i <= 15; ++i) {
+        out << right << setw(10) << ("ND" + std::to_string(i));
+    }
+    out << right << setw(10) << "Egz." << endl;
+}
+
+void print_kursiokai_student_row(std::ostream& out, const Student& s) {
+    out << left << setw(25) << s.name
+        << left << setw(25) << s.surname;
+    for (int g : s.homeworkGrades) {
+        out << right << setw(10) << g;
+    }
+    out << right << setw(10) << s.examGrade << endl;
+}
+
 void write_random_students_table_to_file(int count, const string& filename) {
     try {
         std::ofstream outFile(filename);
@@ -76,12 +94,16 @@ void write_random_students_table_to_file(int count, const string& filename) {
             throw std::runtime_error(
                 "nepavyko atidaryti failo rašymui (kelias arba teisės)");
         }
-        printTableHeader(outFile);
+        print_kursiokai_header(outFile);
         for (int i = 0; i < count; ++i) {
-            const Student s = create_student_fully_random_silent();
-            printStudentRow(outFile, s);
+            Student s = create_student_fully_random_silent();
+            s.homeworkGrades.clear();
+            s.homeworkGrades.reserve(15);
+            for (int j = 0; j < 15; ++j) {
+                s.homeworkGrades.push_back(randomGrade());
+            }
+            print_kursiokai_student_row(outFile, s);
         }
-        printTableFooter(outFile);
         outFile.flush();
         if (!outFile) {
             throw std::runtime_error(
@@ -154,7 +176,7 @@ void handleMenuChoice(int choice, vector<Student>& students) {
                     + "): ",
                 1, k_max_bulk_random_students);
             const string outFilename =
-                read_required_line(cin, cout, "Enter output filename (e.g. results.txt): ");
+                read_required_line(cin, cout, "Enter output filename (e.g. kursiokai.txt): ");
             write_random_students_table_to_file(count, outFilename);
             break;
         }
