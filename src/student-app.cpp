@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 
 namespace {
 
@@ -104,9 +105,18 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             string filename;
             cout << "Enter file name (e.g. data.txt): ";
             cin >> filename;
-            const vector<Student> fileStudents = createStudentsFromFile(filename);
-            cout << "Loaded " << fileStudents.size() << " students from file." << endl;
-            students.insert(students.end(), fileStudents.begin(), fileStudents.end());
+            try {
+                const vector<Student> fileStudents = createStudentsFromFile(filename);
+                if (fileStudents.empty()) {
+                    cout << "File opened, but no valid student rows were found (empty file or bad lines)."
+                         << endl;
+                } else {
+                    cout << "Loaded " << fileStudents.size() << " students from file." << endl;
+                }
+                students.insert(students.end(), fileStudents.begin(), fileStudents.end());
+            } catch (const std::exception& e) {
+                cout << "Error reading \"" << filename << "\": " << e.what() << endl;
+            }
             break;
         }
     }
@@ -172,13 +182,21 @@ void outputResults(const vector<Student>& students) {
         cout << "Enter output filename (e.g. results.txt): ";
         cin >> outFilename;
 
-        std::ofstream outFile(outFilename);
-        if (!outFile) {
-            cout << "Failed to open output file. Showing results in console instead." << endl;
-            printResults(students, cout);
-        } else {
+        try {
+            std::ofstream outFile(outFilename);
+            if (!outFile) {
+                throw std::runtime_error("could not open file for writing (path or permission)");
+            }
             printResults(students, outFile);
+            outFile.flush();
+            if (!outFile) {
+                throw std::runtime_error("write failed (disk full or I/O error)");
+            }
             cout << "Results saved to " << outFilename << endl;
+        } catch (const std::exception& e) {
+            cout << "Error writing \"" << outFilename << "\": " << e.what() << endl;
+            cout << "Showing results in console instead." << endl;
+            printResults(students, cout);
         }
     } else {
         printResults(students, cout);

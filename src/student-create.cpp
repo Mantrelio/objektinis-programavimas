@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 namespace {
 
@@ -141,14 +142,13 @@ Student createStudentFullyRandom() {
 }
 
 vector<Student> createStudentsFromFile(const string& filename) {
-    vector<Student> studentsFromFile;
     std::ifstream in(filename);
 
     if (!in) {
-        cout << "Failed to open file: " << filename << endl;
-        return studentsFromFile;
+        throw std::runtime_error("could not open file for reading (missing path or no permission)");
     }
 
+    vector<Student> studentsFromFile;
     string headerLine;
     std::getline(in, headerLine);
 
@@ -162,3 +162,4 @@ vector<Student> createStudentsFromFile(const string& filename) {
 
     return studentsFromFile;
 }
+
