@@ -63,6 +63,27 @@ bool compareStudentsForSort(int sortChoice, const Student& a, const Student& b) 
     }
 }
 
+vector<Student> applySorting(const vector<Student>& students, int sortChoice) {
+    vector<Student> resultStudents = students;
+    if (sortChoice != 0) {
+        std::sort(resultStudents.begin(), resultStudents.end(),
+            [sortChoice](const Student& a, const Student& b) {
+                return compareStudentsForSort(sortChoice, a, b);
+            });
+    }
+    return resultStudents;
+}
+
+void print_sort_menu(const char* title) {
+    cout << "\n" << title << endl;
+    cout << "0 - Unsorted (original order)" << endl;
+    cout << "1 - By name" << endl;
+    cout << "2 - By surname" << endl;
+    cout << "3 - By final average" << endl;
+    cout << "4 - By final median" << endl;
+    cout << "Choice: ";
+}
+
 void announceNextStudent(std::size_t studentIndex) {
     cout << "\n--- Student " << studentIndex << " ---" << endl;
 }
@@ -125,6 +146,88 @@ void printResults(const vector<Student>& students, std::ostream& out) {
     printTableFooter(out);
 }
 
+namespace {
+
+constexpr double k_grade_split_boundary = 5.0;
+
+}  // namespace
+
+void split_protingi_kvaili() {
+    const string filename =
+        read_required_line(cin, cout, "Enter data file name (e.g. data.txt): ");
+
+    vector<Student> fileStudents;
+    try {
+        fileStudents = createStudentsFromFile(filename);
+    } catch (const std::exception& e) {
+        cout << "Klaida skaitant „" << filename << "“: " << e.what() << endl;
+        return;
+    }
+
+    if (fileStudents.empty()) {
+        cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
+                "(tuščias failas arba netinkamos eilutės)."
+             << endl;
+        return;
+    }
+
+    cout << "Loaded " << fileStudents.size() << " students from file." << endl;
+
+    vector<Student> protingi;
+    vector<Student> kvaili;
+    protingi.reserve(fileStudents.size());
+    kvaili.reserve(fileStudents.size());
+
+    for (const Student& s : fileStudents) {
+        const double finalAvg = calculateFinalGradeAverage(s.homeworkGrades, s.examGrade);
+        if (finalAvg < k_grade_split_boundary) {
+            kvaili.push_back(s);
+        } else {
+            protingi.push_back(s);
+        }
+    }
+
+    print_sort_menu("Choose sorting for Protingi file:");
+    const int protingiSort = read_int_in_range(cin, cout, "", 0, 4);
+    if (protingiSort == 0) {
+        cout << "Protingi: original order within group." << endl;
+    }
+    const vector<Student> protingiOut = applySorting(protingi, protingiSort);
+
+    print_sort_menu("Choose sorting for Kvaili file:");
+    const int kvailiSort = read_int_in_range(cin, cout, "", 0, 4);
+    if (kvailiSort == 0) {
+        cout << "Kvaili: original order within group." << endl;
+    }
+    const vector<Student> kvailiOut = applySorting(kvaili, kvailiSort);
+
+    const string protingiFilename =
+        read_required_line(cin, cout, "Enter Protingi output filename (e.g. Protingi.txt): ");
+    const string kvailiFilename =
+        read_required_line(cin, cout, "Enter Kvaili output filename (e.g. Kvaili.txt): ");
+
+    try {
+        std::ofstream protingiFile(protingiFilename);
+        std::ofstream kvailiFile(kvailiFilename);
+        if (!protingiFile || !kvailiFile) {
+            throw std::runtime_error(
+                "nepavyko atidaryti failo rašymui (kelias arba teisės)");
+        }
+        printResults(protingiOut, protingiFile);
+        printResults(kvailiOut, kvailiFile);
+        protingiFile.flush();
+        kvailiFile.flush();
+        if (!protingiFile || !kvailiFile) {
+            throw std::runtime_error(
+                "rašymas nepavyko (diskas pilnas arba įvesties/išvesties klaida)");
+        }
+        cout << "Protingi saved to " << protingiFilename << endl;
+        cout << "Kvaili saved to " << kvailiFilename << endl;
+    } catch (const std::exception& e) {
+        cout << "Klaida rašant: " << e.what() << endl;
+    }
+}
+
 void showMainMenu() {
     cout << "\n=== MENU ===" << endl;
     cout << "1 - Manual input (enter all values)" << endl;
@@ -132,7 +235,8 @@ void showMainMenu() {
     cout << "3 - Generate all data randomly" << endl;
     cout << "4 - Read students from file" << endl;
     cout << "5 - Generate random student list to file (count only)" << endl;
-    cout << "6 - Exit and show results" << endl;
+    cout << "6 - Split into Protingi / Kvaili files (results format)" << endl;
+    cout << "7 - Exit and show results" << endl;
     cout << "Choose option: ";
 }
 
@@ -180,17 +284,20 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             write_random_students_table_to_file(count, outFilename);
             break;
         }
+        case 6:
+            split_protingi_kvaili();
+            break;
     }
 }
 
 void collectStudents(vector<Student>& students) {
     int choice = 0;
 
-    while (choice != 6) {
+    while (choice != 7) {
         showMainMenu();
-        choice = read_int_in_range(cin, cout, "", 1, 6);
+        choice = read_int_in_range(cin, cout, "", 1, 7);
 
-        if (choice == 6) {
+        if (choice == 7) {
             break;
         }
 
@@ -199,28 +306,14 @@ void collectStudents(vector<Student>& students) {
 }
 
 vector<Student> chooseSorting(const vector<Student>& students) {
-    int sortChoice = 0;
-    cout << "\nChoose sorting option:" << endl;
-    cout << "0 - Unsorted (original order)" << endl;
-    cout << "1 - By name" << endl;
-    cout << "2 - By surname" << endl;
-    cout << "3 - By final average" << endl;
-    cout << "4 - By final median" << endl;
-    cout << "Choice: ";
-    sortChoice = read_int_in_range(cin, cout, "", 0, 4);
-
-    vector<Student> resultStudents = students;
+    print_sort_menu("Choose sorting option:");
+    const int sortChoice = read_int_in_range(cin, cout, "", 0, 4);
 
     if (sortChoice == 0) {
         cout << "Showing unsorted results (original order)." << endl;
-    } else {
-        std::sort(resultStudents.begin(), resultStudents.end(),
-            [sortChoice](const Student& a, const Student& b) {
-                return compareStudentsForSort(sortChoice, a, b);
-            });
     }
 
-    return resultStudents;
+    return applySorting(students, sortChoice);
 }
 
 void outputResults(const vector<Student>& students) {
