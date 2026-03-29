@@ -160,6 +160,14 @@ constexpr double k_grade_split_boundary = 5.0;
 }  // namespace
 
 void split_protingi_kvaili() {
+    const auto tOperation0 = std::chrono::steady_clock::now();
+    auto print_elapsed_total = [tOperation0] {
+        const auto tOperation1 = std::chrono::steady_clock::now();
+        cout << "Time elapsed (total): " << std::fixed << std::setprecision(3)
+             << std::chrono::duration<double>(tOperation1 - tOperation0).count() << " s"
+             << endl;
+    };
+
     const string filename =
         read_required_line(cin, cout, "Enter data file name (e.g. data.txt): ");
 
@@ -172,6 +180,7 @@ void split_protingi_kvaili() {
         readElapsedSec = std::chrono::duration<double>(tRead1 - tRead0).count();
     } catch (const std::exception& e) {
         cout << "Klaida skaitant „" << filename << "“: " << e.what() << endl;
+        print_elapsed_total();
         return;
     }
 
@@ -182,6 +191,7 @@ void split_protingi_kvaili() {
         cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
                 "(tuščias failas arba netinkamos eilutės)."
              << endl;
+        print_elapsed_total();
         return;
     }
 
@@ -252,6 +262,7 @@ void split_protingi_kvaili() {
     }
 
     cout << "Loaded " << fileStudents.size() << " students from file." << endl;
+    print_elapsed_total();
 }
 
 void showMainMenu() {
