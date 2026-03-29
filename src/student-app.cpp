@@ -5,6 +5,7 @@
 #include "student-grading.h"
 
 #include <algorithm>
+#include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -116,6 +117,7 @@ void write_random_students_table_to_file(int count, const string& filename) {
                 "nepavyko atidaryti failo rašymui (kelias arba teisės)");
         }
         print_kursiokai_header(outFile);
+        const auto t0 = std::chrono::steady_clock::now();
         for (int i = 0; i < count; ++i) {
             Student s = create_student_fully_random_silent();
             s.homeworkGrades.clear();
@@ -130,7 +132,12 @@ void write_random_students_table_to_file(int count, const string& filename) {
             throw std::runtime_error(
                 "rašymas nepavyko (diskas pilnas arba įvesties/išvesties klaida)");
         }
+        const auto t1 = std::chrono::steady_clock::now();
+        const double elapsedSec =
+            std::chrono::duration<double>(t1 - t0).count();
         cout << "Wrote " << count << " students to " << filename << endl;
+        cout << "Time elapsed: " << std::fixed << std::setprecision(3) << elapsedSec
+             << " s" << endl;
     } catch (const std::exception& e) {
         cout << "Klaida rašant į „" << filename << "“: " << e.what() << endl;
     }
