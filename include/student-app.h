@@ -10,4 +10,4 @@ void collectStudents(vector<Student>& students);
 vector<Student> chooseSorting(const vector<Student>& students);
 void outputResults(const vector<Student>& students);
 void chooseOutputAndPrint(const vector<Student>& students);
-void split_protingi_kvaili();
+void split_protingi_kvaili(int benchmark_runs = 1);
