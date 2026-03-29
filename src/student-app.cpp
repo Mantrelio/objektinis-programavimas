@@ -160,12 +160,38 @@ constexpr double k_grade_split_boundary = 5.0;
 }  // namespace
 
 void split_protingi_kvaili() {
-    const auto tOperation0 = std::chrono::steady_clock::now();
-    auto print_elapsed_total = [tOperation0] {
-        const auto tOperation1 = std::chrono::steady_clock::now();
+    auto print_timing_summary = [&](bool readMeasured, double readSec,
+                                     bool splitMeasured, double splitSec,
+                                     bool orderMeasured, double orderSec,
+                                     bool writeMeasured, double writeSec) {
+        double totalSec = 0.0;
+        if (readMeasured) {
+            totalSec += readSec;
+        }
+        if (splitMeasured) {
+            totalSec += splitSec;
+        }
+        if (orderMeasured) {
+            totalSec += orderSec;
+        }
+        if (writeMeasured) {
+            totalSec += writeSec;
+        }
+        cout << "\n--- Timing ---" << endl;
+        if (readMeasured) {
+            cout << "Time elapsed (read file): " << std::fixed << std::setprecision(3)
+                 << readSec << " s" << endl;
+        }
+        if (splitMeasured) {
+            cout << "Time elapsed (split into Protingi / Kvaili): " << std::fixed
+                 << std::setprecision(3) << splitSec << " s" << endl;
+        }
+        if (writeMeasured) {
+            cout << "Time elapsed (write to separate files): " << std::fixed
+                 << std::setprecision(3) << writeSec << " s" << endl;
+        }
         cout << "Time elapsed (total): " << std::fixed << std::setprecision(3)
-             << std::chrono::duration<double>(tOperation1 - tOperation0).count() << " s"
-             << endl;
+             << totalSec << " s" << endl;
     };
 
     const string filename =
@@ -173,25 +199,25 @@ void split_protingi_kvaili() {
 
     vector<Student> fileStudents;
     double readElapsedSec = 0.0;
+    bool readMeasured = false;
     try {
         const auto tRead0 = std::chrono::steady_clock::now();
         fileStudents = createStudentsFromFile(filename);
         const auto tRead1 = std::chrono::steady_clock::now();
         readElapsedSec = std::chrono::duration<double>(tRead1 - tRead0).count();
+        readMeasured = true;
     } catch (const std::exception& e) {
         cout << "Klaida skaitant „" << filename << "“: " << e.what() << endl;
-        print_elapsed_total();
+        print_timing_summary(false, 0.0, false, 0.0, false, 0.0, false, 0.0);
         return;
     }
-
-    cout << "Time elapsed (read file): " << std::fixed << std::setprecision(3)
-         << readElapsedSec << " s" << endl;
 
     if (fileStudents.empty()) {
         cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
                 "(tuščias failas arba netinkamos eilutės)."
              << endl;
-        print_elapsed_total();
+        print_timing_summary(readMeasured, readElapsedSec, false, 0.0, false, 0.0,
+            false, 0.0);
         return;
     }
 
@@ -212,28 +238,35 @@ void split_protingi_kvaili() {
     const auto tSplit1 = std::chrono::steady_clock::now();
     const double splitIntoGroupsSec =
         std::chrono::duration<double>(tSplit1 - tSplit0).count();
-    cout << "Time elapsed (split into Protingi / Kvaili): " << std::fixed
-         << std::setprecision(3) << splitIntoGroupsSec << " s" << endl;
 
     print_sort_menu("Choose sorting for Protingi file:");
     const int protingiSort = read_int_in_range(cin, cout, "", 0, 4);
     if (protingiSort == 0) {
         cout << "Protingi: original order within group." << endl;
     }
+    const auto tOrderProtingi0 = std::chrono::steady_clock::now();
     const vector<Student> protingiOut = applySorting(protingi, protingiSort);
+    const auto tOrderProtingi1 = std::chrono::steady_clock::now();
 
     print_sort_menu("Choose sorting for Kvaili file:");
     const int kvailiSort = read_int_in_range(cin, cout, "", 0, 4);
     if (kvailiSort == 0) {
         cout << "Kvaili: original order within group." << endl;
     }
+    const auto tOrderKvaili0 = std::chrono::steady_clock::now();
     const vector<Student> kvailiOut = applySorting(kvaili, kvailiSort);
+    const auto tOrderKvaili1 = std::chrono::steady_clock::now();
+    const double orderElapsedSec =
+        std::chrono::duration<double>(tOrderProtingi1 - tOrderProtingi0).count()
+        + std::chrono::duration<double>(tOrderKvaili1 - tOrderKvaili0).count();
 
     const string protingiFilename =
         read_required_line(cin, cout, "Enter Protingi output filename (e.g. Protingi.txt): ");
     const string kvailiFilename =
         read_required_line(cin, cout, "Enter Kvaili output filename (e.g. Kvaili.txt): ");
 
+    double writeSeparateFilesSec = 0.0;
+    bool writeMeasured = false;
     try {
         std::ofstream protingiFile(protingiFilename);
         std::ofstream kvailiFile(kvailiFilename);
@@ -251,10 +284,9 @@ void split_protingi_kvaili() {
             throw std::runtime_error(
                 "rašymas nepavyko (diskas pilnas arba įvesties/išvesties klaida)");
         }
-        const double writeSeparateFilesSec =
+        writeSeparateFilesSec =
             std::chrono::duration<double>(tWrite1 - tWrite0).count();
-        cout << "Time elapsed (write to separate files): " << std::fixed
-             << std::setprecision(3) << writeSeparateFilesSec << " s" << endl;
+        writeMeasured = true;
         cout << "Protingi saved to " << protingiFilename << endl;
         cout << "Kvaili saved to " << kvailiFilename << endl;
     } catch (const std::exception& e) {
@@ -262,7 +294,8 @@ void split_protingi_kvaili() {
     }
 
     cout << "Loaded " << fileStudents.size() << " students from file." << endl;
-    print_elapsed_total();
+    print_timing_summary(readMeasured, readElapsedSec, true, splitIntoGroupsSec,
+        true, orderElapsedSec, writeMeasured, writeSeparateFilesSec);
 }
 
 void showMainMenu() {
