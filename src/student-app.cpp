@@ -185,8 +185,6 @@ void split_protingi_kvaili() {
         return;
     }
 
-    cout << "Loaded " << fileStudents.size() << " students from file." << endl;
-
     vector<Student> protingi;
     vector<Student> kvaili;
     protingi.reserve(fileStudents.size());
@@ -246,6 +244,8 @@ void split_protingi_kvaili() {
     } catch (const std::exception& e) {
         cout << "Klaida rašant: " << e.what() << endl;
     }
+
+    cout << "Loaded " << fileStudents.size() << " students from file." << endl;
 }
 
 void showMainMenu() {
