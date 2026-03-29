@@ -4,6 +4,7 @@
 #include "student-grading.h"
 
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -111,6 +112,45 @@ bool parseStudentFromLine(const string& line, Student& student) {
     return true;
 }
 
+std::size_t read_students_from_file_split_into_groups(const string& filename,
+    vector<Student>& protingi, vector<Student>& kvaili, double average_boundary) {
+    std::ifstream in(filename);
+    if (!in) {
+        throw std::runtime_error(
+            "nepavyko atidaryti failo skaitymui (kelias neegzistuoja arba nėra teisių)");
+    }
+
+    try {
+        const auto byteSize = std::filesystem::file_size(filename);
+        const std::size_t roughLines = static_cast<std::size_t>(byteSize / 180 + 1);
+        protingi.reserve(roughLines / 2);
+        kvaili.reserve(roughLines / 2);
+    } catch (const std::filesystem::filesystem_error&) {
+        // best-effort reserve only
+    }
+
+    string headerLine;
+    std::getline(in, headerLine);
+
+    string line;
+    std::size_t parsed = 0;
+    while (std::getline(in, line)) {
+        Student student;
+        if (!parseStudentFromLine(line, student)) {
+            continue;
+        }
+        ++parsed;
+        const double finalAvg =
+            calculateFinalGradeAverage(student.homeworkGrades, student.examGrade);
+        if (finalAvg < average_boundary) {
+            kvaili.push_back(std::move(student));
+        } else {
+            protingi.push_back(std::move(student));
+        }
+    }
+    return parsed;
+}
+
 void fill_student_fully_random(Student& student) {
     student.name = randomName();
     student.surname = randomSurname();
@@ -197,5 +237,12 @@ vector<Student> createStudentsFromFile(const string& filename) {
     }
 
     return studentsFromFile;
+}
+
+std::size_t readStudentsFromFileSplitByFinalAverage(const string& filename,
+    vector<Student>& protingi, vector<Student>& kvaili, double average_boundary) {
+    protingi.clear();
+    kvaili.clear();
+    return read_students_from_file_split_into_groups(filename, protingi, kvaili, average_boundary);
 }
 

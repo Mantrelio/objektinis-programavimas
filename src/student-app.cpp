@@ -75,6 +75,15 @@ vector<Student> applySorting(const vector<Student>& students, int sortChoice) {
     return resultStudents;
 }
 
+void sortStudentsInPlace(vector<Student>& students, int sortChoice) {
+    if (sortChoice != 0) {
+        std::sort(students.begin(), students.end(),
+            [sortChoice](const Student& a, const Student& b) {
+                return compareStudentsForSort(sortChoice, a, b);
+            });
+    }
+}
+
 void print_sort_menu(const char* title) {
     cout << "\n" << title << endl;
     cout << "0 - Unsorted (original order)" << endl;
@@ -198,12 +207,14 @@ void split_protingi_kvaili() {
     const string filename =
         read_required_line(cin, cout, "Enter data file name (e.g. data.txt): ");
 
-    vector<Student> fileStudents;
+    vector<Student> protingi;
+    vector<Student> kvaili;
     double readElapsedSec = 0.0;
     bool readMeasured = false;
     try {
         const auto tRead0 = std::chrono::steady_clock::now();
-        fileStudents = createStudentsFromFile(filename);
+        readStudentsFromFileSplitByFinalAverage(
+            filename, protingi, kvaili, k_grade_split_boundary);
         const auto tRead1 = std::chrono::steady_clock::now();
         readElapsedSec = std::chrono::duration<double>(tRead1 - tRead0).count();
         readMeasured = true;
@@ -213,7 +224,7 @@ void split_protingi_kvaili() {
         return;
     }
 
-    if (fileStudents.empty()) {
+    if (protingi.empty() && kvaili.empty()) {
         cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
                 "(tuščias failas arba netinkamos eilutės)."
              << endl;
@@ -222,31 +233,13 @@ void split_protingi_kvaili() {
         return;
     }
 
-    vector<Student> protingi;
-    vector<Student> kvaili;
-    protingi.reserve(fileStudents.size());
-    kvaili.reserve(fileStudents.size());
-
-    const auto tSplit0 = std::chrono::steady_clock::now();
-    for (const Student& s : fileStudents) {
-        const double finalAvg = calculateFinalGradeAverage(s.homeworkGrades, s.examGrade);
-        if (finalAvg < k_grade_split_boundary) {
-            kvaili.push_back(s);
-        } else {
-            protingi.push_back(s);
-        }
-    }
-    const auto tSplit1 = std::chrono::steady_clock::now();
-    const double splitIntoGroupsSec =
-        std::chrono::duration<double>(tSplit1 - tSplit0).count();
-
     print_sort_menu("Choose sorting for Protingi file:");
     const int protingiSort = read_int_in_range(cin, cout, "", 0, 4);
     if (protingiSort == 0) {
         cout << "Protingi: original order within group." << endl;
     }
     const auto tOrderProtingi0 = std::chrono::steady_clock::now();
-    const vector<Student> protingiOut = applySorting(protingi, protingiSort);
+    sortStudentsInPlace(protingi, protingiSort);
     const auto tOrderProtingi1 = std::chrono::steady_clock::now();
 
     print_sort_menu("Choose sorting for Kvaili file:");
@@ -255,7 +248,7 @@ void split_protingi_kvaili() {
         cout << "Kvaili: original order within group." << endl;
     }
     const auto tOrderKvaili0 = std::chrono::steady_clock::now();
-    const vector<Student> kvailiOut = applySorting(kvaili, kvailiSort);
+    sortStudentsInPlace(kvaili, kvailiSort);
     const auto tOrderKvaili1 = std::chrono::steady_clock::now();
     const double orderElapsedSec =
         std::chrono::duration<double>(tOrderProtingi1 - tOrderProtingi0).count()
@@ -276,8 +269,8 @@ void split_protingi_kvaili() {
                 "nepavyko atidaryti failo rašymui (kelias arba teisės)");
         }
         const auto tWrite0 = std::chrono::steady_clock::now();
-        printResults(protingiOut, protingiFile);
-        printResults(kvailiOut, kvailiFile);
+        printResults(protingi, protingiFile);
+        printResults(kvaili, kvailiFile);
         protingiFile.flush();
         kvailiFile.flush();
         const auto tWrite1 = std::chrono::steady_clock::now();
@@ -294,8 +287,8 @@ void split_protingi_kvaili() {
         cout << "Klaida rašant: " << e.what() << endl;
     }
 
-    cout << "Loaded " << fileStudents.size() << " students from file." << endl;
-    print_timing_summary(readMeasured, readElapsedSec, true, splitIntoGroupsSec,
+    cout << "Loaded " << (protingi.size() + kvaili.size()) << " students from file." << endl;
+    print_timing_summary(readMeasured, readElapsedSec, false, 0.0,
         true, orderElapsedSec, writeMeasured, writeSeparateFilesSec);
 }
 
