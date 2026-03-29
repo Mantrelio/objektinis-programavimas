@@ -164,12 +164,19 @@ void split_protingi_kvaili() {
         read_required_line(cin, cout, "Enter data file name (e.g. data.txt): ");
 
     vector<Student> fileStudents;
+    double readElapsedSec = 0.0;
     try {
+        const auto tRead0 = std::chrono::steady_clock::now();
         fileStudents = createStudentsFromFile(filename);
+        const auto tRead1 = std::chrono::steady_clock::now();
+        readElapsedSec = std::chrono::duration<double>(tRead1 - tRead0).count();
     } catch (const std::exception& e) {
         cout << "Klaida skaitant „" << filename << "“: " << e.what() << endl;
         return;
     }
+
+    cout << "Time elapsed (read file): " << std::fixed << std::setprecision(3)
+         << readElapsedSec << " s" << endl;
 
     if (fileStudents.empty()) {
         cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
@@ -207,6 +214,17 @@ void split_protingi_kvaili() {
         cout << "Kvaili: original order within group." << endl;
     }
     const vector<Student> kvailiOut = applySorting(kvaili, kvailiSort);
+
+    const auto tPrint0 = std::chrono::steady_clock::now();
+    cout << "\n=== Protingi (console) ===" << endl;
+    printResults(protingiOut, cout);
+    cout << "\n=== Kvaili (console) ===" << endl;
+    printResults(kvailiOut, cout);
+    const auto tPrint1 = std::chrono::steady_clock::now();
+    const double printElapsedSec =
+        std::chrono::duration<double>(tPrint1 - tPrint0).count();
+    cout << "Time elapsed (print to console): " << std::fixed << std::setprecision(3)
+         << printElapsedSec << " s" << endl;
 
     const string protingiFilename =
         read_required_line(cin, cout, "Enter Protingi output filename (e.g. Protingi.txt): ");
