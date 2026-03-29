@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
 namespace {
 
@@ -66,6 +67,32 @@ void announceNextStudent(std::size_t studentIndex) {
     cout << "\n--- Student " << studentIndex << " ---" << endl;
 }
 
+constexpr int k_max_bulk_random_students = 10'000'000;
+
+void write_random_students_table_to_file(int count, const string& filename) {
+    try {
+        std::ofstream outFile(filename);
+        if (!outFile) {
+            throw std::runtime_error(
+                "nepavyko atidaryti failo rašymui (kelias arba teisės)");
+        }
+        printTableHeader(outFile);
+        for (int i = 0; i < count; ++i) {
+            const Student s = create_student_fully_random_silent();
+            printStudentRow(outFile, s);
+        }
+        printTableFooter(outFile);
+        outFile.flush();
+        if (!outFile) {
+            throw std::runtime_error(
+                "rašymas nepavyko (diskas pilnas arba įvesties/išvesties klaida)");
+        }
+        cout << "Wrote " << count << " students to " << filename << endl;
+    } catch (const std::exception& e) {
+        cout << "Klaida rašant į „" << filename << "“: " << e.what() << endl;
+    }
+}
+
 }  // namespace
 
 void printResults(const vector<Student>& students, std::ostream& out) {
@@ -82,7 +109,8 @@ void showMainMenu() {
     cout << "2 - Enter name/surname, generate grades" << endl;
     cout << "3 - Generate all data randomly" << endl;
     cout << "4 - Read students from file" << endl;
-    cout << "5 - Exit and show results" << endl;
+    cout << "5 - Generate random student list to file (count only)" << endl;
+    cout << "6 - Exit and show results" << endl;
     cout << "Choose option: ";
 }
 
@@ -120,17 +148,27 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             }
             break;
         }
+        case 5: {
+            const int count = read_int_in_range(cin, cout,
+                "How many students to generate (1-" + std::to_string(k_max_bulk_random_students)
+                    + "): ",
+                1, k_max_bulk_random_students);
+            const string outFilename =
+                read_required_line(cin, cout, "Enter output filename (e.g. results.txt): ");
+            write_random_students_table_to_file(count, outFilename);
+            break;
+        }
     }
 }
 
 void collectStudents(vector<Student>& students) {
     int choice = 0;
 
-    while (choice != 5) {
+    while (choice != 6) {
         showMainMenu();
-        choice = read_int_in_range(cin, cout, "", 1, 5);
+        choice = read_int_in_range(cin, cout, "", 1, 6);
 
-        if (choice == 5) {
+        if (choice == 6) {
             break;
         }
 
