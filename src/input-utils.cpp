@@ -1,6 +1,5 @@
 #include "input-utils.h"
 
-#include <cctype>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -22,10 +21,7 @@ bool is_blank(const std::string& s) {
 int parse_int_strict(const std::string& line) {
     std::size_t pos = 0;
     const long long v = std::stoll(line, &pos, 10);
-    while (pos < line.size() && std::isspace(static_cast<unsigned char>(line[pos]))) {
-        ++pos;
-    }
-    if (pos != line.size()) {
+    if (line.find_first_not_of(" \t\r\f\v", pos) != std::string::npos) {
         throw std::invalid_argument("po skaičiaus liko netinkamas tekstas");
     }
     if (v > std::numeric_limits<int>::max() || v < std::numeric_limits<int>::min()) {
@@ -34,18 +30,24 @@ int parse_int_strict(const std::string& line) {
     return static_cast<int>(v);
 }
 
+std::string read_line_until_nonempty(std::istream& in, std::ostream& out,
+    const std::string& prompt) {
+    while (true) {
+        out << prompt;
+        const std::string line = read_line(in);
+        if (!is_blank(line)) {
+            return line;
+        }
+        out << "Įvestis negali būti tuščia.\n";
+    }
+}
+
 }  // namespace
 
 int read_int(std::istream& in, std::ostream& out, const std::string& prompt) {
     while (true) {
-        out << prompt;
         try {
-            const std::string line = read_line(in);
-            if (is_blank(line)) {
-                out << "Įvestis negali būti tuščia.\n";
-                continue;
-            }
-            return parse_int_strict(line);
+            return parse_int_strict(read_line_until_nonempty(in, out, prompt));
         } catch (const std::invalid_argument&) {
             out << "Netinkama įvestis: įveskite sveikąjį skaičių (be raidžių).\n";
         } catch (const std::out_of_range&) {
@@ -66,12 +68,5 @@ int read_int_in_range(std::istream& in, std::ostream& out, const std::string& pr
 }
 
 std::string read_required_line(std::istream& in, std::ostream& out, const std::string& prompt) {
-    while (true) {
-        out << prompt;
-        const std::string line = read_line(in);
-        if (!is_blank(line)) {
-            return line;
-        }
-        out << "Įvestis negali būti tuščia.\n";
-    }
+    return read_line_until_nonempty(in, out, prompt);
 }
