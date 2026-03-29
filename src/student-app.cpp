@@ -192,6 +192,7 @@ void split_protingi_kvaili() {
     protingi.reserve(fileStudents.size());
     kvaili.reserve(fileStudents.size());
 
+    const auto tSplit0 = std::chrono::steady_clock::now();
     for (const Student& s : fileStudents) {
         const double finalAvg = calculateFinalGradeAverage(s.homeworkGrades, s.examGrade);
         if (finalAvg < k_grade_split_boundary) {
@@ -200,6 +201,11 @@ void split_protingi_kvaili() {
             protingi.push_back(s);
         }
     }
+    const auto tSplit1 = std::chrono::steady_clock::now();
+    const double splitIntoGroupsSec =
+        std::chrono::duration<double>(tSplit1 - tSplit0).count();
+    cout << "Time elapsed (split into Protingi / Kvaili): " << std::fixed
+         << std::setprecision(3) << splitIntoGroupsSec << " s" << endl;
 
     print_sort_menu("Choose sorting for Protingi file:");
     const int protingiSort = read_int_in_range(cin, cout, "", 0, 4);
@@ -214,17 +220,6 @@ void split_protingi_kvaili() {
         cout << "Kvaili: original order within group." << endl;
     }
     const vector<Student> kvailiOut = applySorting(kvaili, kvailiSort);
-
-    const auto tPrint0 = std::chrono::steady_clock::now();
-    cout << "\n=== Protingi (console) ===" << endl;
-    printResults(protingiOut, cout);
-    cout << "\n=== Kvaili (console) ===" << endl;
-    printResults(kvailiOut, cout);
-    const auto tPrint1 = std::chrono::steady_clock::now();
-    const double printElapsedSec =
-        std::chrono::duration<double>(tPrint1 - tPrint0).count();
-    cout << "Time elapsed (print to console): " << std::fixed << std::setprecision(3)
-         << printElapsedSec << " s" << endl;
 
     const string protingiFilename =
         read_required_line(cin, cout, "Enter Protingi output filename (e.g. Protingi.txt): ");
