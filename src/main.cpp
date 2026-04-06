@@ -1,15 +1,12 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "student-app.h"
+#include "student-menu.h"
 
 int main() {
     srand(time(0));
 
-    vector<Student> students;
-
-    collectStudents(students);
-    chooseOutputAndPrint(students);
+    startMainMenu();
 
     return 0;
 }
