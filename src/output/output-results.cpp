@@ -19,15 +19,15 @@ using std::setw;
 
 void outputResultsInConsole(const vector<Student>& students, std::ostream& out) {
     if (students.empty()) {
-        cout << "No students to display." << endl;
+        cout << "NeraĮ rodytį studentų." << endl;
         return;
     }
 
     out << "\n" << string(70, '=') << endl;
-    out << left << setw(20) << "Name"
-        << left << setw(20) << "Surname"
-        << right << setw(15) << "Final (Avg.)"
-        << right << setw(15) << "Final (Med.)" << endl;
+    out << left << setw(20) << "Vardas"
+        << left << setw(20) << "Pavardė"
+        << right << setw(15) << "Gal. (Vid.)"
+        << right << setw(15) << "Gal. (Med.)" << endl;
     out << string(70, '-') << endl;
 
     for (int i = 0; i < static_cast<int>(students.size()); i++) {
@@ -47,15 +47,15 @@ void printResults(const vector<Student>& students, std::ostream& out) {
 }
 
 void outputResults(const vector<Student>& students) {
-    cout << "\nChoose output method:" << endl;
-    cout << "1 - Show results in console" << endl;
-    cout << "2 - Save results to text file" << endl;
+    cout << "\nPasirinkite išvedimo būdą:" << endl;
+    cout << "1 - Rodyti rezultatus konsoleje" << endl;
+    cout << "2 - Išsaugoti rezultatus į tekstinį failą" << endl;
 
-    const int outputChoice = readIntInRange("Choice: ", 1, 2);
+    const int outputChoice = readIntInRange("Pasirinkimas: ", 1, 2);
 
     if (outputChoice == 2) {
         const string outFilename =
-            readSingleStringToken("Enter output filename (e.g. results.txt): ");
+            readSingleStringToken("Suveskite išsaugų failo pavadinimą (pvz. results.txt): ");
 
         try {
             ofstream outFile(outFilename);
@@ -69,10 +69,10 @@ void outputResults(const vector<Student>& students) {
                 throw runtime_error("failed while writing results to file");
             }
 
-            cout << "Results saved to " << outFilename << endl;
+            cout << "Rezultatai išsaugoti: " << outFilename << endl;
         } catch (const std::exception& e) {
-            cout << "Failed to write results to \"" << outFilename << "\": " << e.what() << endl;
-            cout << "Showing results in console instead." << endl;
+            cout << "Nepavyko išsaugoti rezultatų į \"" << outFilename << "\": " << e.what() << endl;
+            cout << "Rezultatai rodomi konsoleje." << endl;
             printResults(students, cout);
         }
         return;
@@ -83,7 +83,7 @@ void outputResults(const vector<Student>& students) {
 
 void chooseOutputAndPrint(const vector<Student>& students) {
     if (students.empty()) {
-        cout << "No students to display." << endl;
+        cout << "NeraĮ rodytį studentų." << endl;
         return;
     }
 

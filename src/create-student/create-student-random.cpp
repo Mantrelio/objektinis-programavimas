@@ -27,7 +27,7 @@ Student createStudentFullyRandom() {
         student.homeworkGrades.push_back(randomGrade());
     }
     
-    cout << "Generated student: " << student.name << " " << student.surname << endl;
+    cout << "Sugeneruotas studentas: " << student.name << " " << student.surname << endl;
     
     return student;
 }

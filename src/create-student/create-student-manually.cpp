@@ -7,21 +7,21 @@ using std::endl;
 Student createStudentManual() {
     Student student = Student();
 
-    student.name = readSingleStringToken("Enter student name: ");
+    student.name = readSingleStringToken("Suveskite studento vardą: ");
     
-    student.surname = readSingleStringToken("Enter student surname: ");
+    student.surname = readSingleStringToken("Suveskite studento pavardę: ");
     
-    student.examGrade = readIntInRange("Enter student exam grade: ", 1, 10);
+    student.examGrade = readIntInRange("Suveskite egzamino pažymį: ", 1, 10);
 
     char continueHomework = 'Y';
     int homeworkNumber = 1;
     
     while (continueHomework == 'Y') {
-        int grade = readIntInRange("Enter homework grade: ", 1, 10);
+        int grade = readIntInRange("Suveskite namu darbo pažymį: ", 1, 10);
         student.homeworkGrades.push_back(grade);
         homeworkNumber++;
         
-        continueHomework = readYesOrNo("Add another homework grade? (y/n): ");
+        continueHomework = readYesOrNo("Pridėti dar vieną namu darbo pažymį? (y/n): ");
     }
     
     return student;

@@ -12,25 +12,25 @@ using std::sort;
 
 vector<Student> chooseSorting(const vector<Student>& students) {
     int sortChoice;
-    cout << "\nChoose sorting option:" << endl;
-    cout << "0 - Unsorted (original order)" << endl;
-    cout << "1 - By name" << endl;
-    cout << "2 - By surname" << endl;
-    cout << "3 - By final average" << endl;
-    cout << "4 - By final median" << endl;
-    sortChoice = readIntInRange("Choice: ", 0, 4);
+    cout << "\nPasirinkite rūšiavimo būdą:" << endl;
+    cout << "0 - Nerūšiuotas (pradinė tvarka)" << endl;
+    cout << "1 - Pagal vardą" << endl;
+    cout << "2 - Pagal pavardę" << endl;
+    cout << "3 - Pagal galitinį vidurkį" << endl;
+    cout << "4 - Pagal galitinę medianą" << endl;
+    sortChoice = readIntInRange("Pasirinkimas: ", 0, 4);
 
     vector<Student> resultStudents = students;
 
     if (sortChoice == 0) {
-        cout << "Showing unsorted results (original order)." << endl;
+        cout << "Rodomi nerūšiuoti rezultatai (pradinėje tvarkoj)." << endl;
         return resultStudents;
     }
 
-    cout << "\nChoose sorting order:" << endl;
-    cout << "1 - Ascending" << endl;
-    cout << "2 - Descending" << endl;
-    int orderChoice = readIntInRange("Choice: ", 1, 2);
+    cout << "\nPasirinkite rūšiavimo tvarką:" << endl;
+    cout << "1 - Didėjanti" << endl;
+    cout << "2 - Mažėjanti" << endl;
+    int orderChoice = readIntInRange("Pasirinkimas: ", 1, 2);
     bool ascending = (orderChoice == 1);
 
     auto lessByChoice = [sortChoice](const Student& a, const Student& b) {

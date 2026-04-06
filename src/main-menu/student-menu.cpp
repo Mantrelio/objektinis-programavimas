@@ -10,19 +10,19 @@
 namespace {
 
 void announceNextStudent(int studentIndex) {
-    cout << "\n--- Student " << studentIndex << " ---" << endl;
+    cout << "\n--- Studentas " << studentIndex << " ---" << endl;
 }
 
 }  // namespace
 
 void showMainMenu() {
-    cout << "\n=== MENU ===" << endl;
-    cout << "1 - Manual input (enter all values)" << endl;
-    cout << "2 - Enter name/surname, generate grades" << endl;
-    cout << "3 - Generate all data randomly" << endl;
-    cout << "4 - Read students from file" << endl;
-    cout << "5 - Exit and show results" << endl;
-    cout << "Choose option: ";
+    cout << "\n=== MENIU ===" << endl;
+    cout << "1 - Rankinė įvestis (įvesti visas reikšmes)" << endl;
+    cout << "2 - Įvesti vardą/pavardę, generuoti pažymius" << endl;
+    cout << "3 - Generuoti visus duomenis atsitiktinai" << endl;
+    cout << "4 - Skaityti studentus iš failo" << endl;
+    cout << "5 - Baigti ir peržiūrėti rezultatus" << endl;
+    cout << "Pasirinkite variantą: ";
 }
 
 void handleMenuChoice(int choice, vector<Student>& students) {
@@ -43,15 +43,15 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             break;
         case 4: {
             const string filename =
-                readSingleStringToken("Enter file name (e.g. data.txt): ");
+                readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
             try {
                 const vector<Student> fileStudents = createStudentsFromFile(filename);
                 if (fileStudents.empty()) {
-                    cout << "Failas atidarytas, bet tinkamu studentu eiluciu nerasta "
-                            "(tuscias failas arba netinkamos eilutes)."
+                    cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
+                            "(tuščias failas arba netinkamos eilutės)."
                          << endl;
                 } else {
-                    cout << "Loaded " << fileStudents.size() << " students from file." << endl;
+                    cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;
                 }
                 students.insert(students.end(), fileStudents.begin(), fileStudents.end());
             } catch (const std::exception& e) {
@@ -72,7 +72,7 @@ void startMainMenu() {
 
     while (choice != 5) {
         showMainMenu();
-        choice = readIntInRange("", 1, 5);
+        choice = readIntInRange("Pasirinkimas: ", 1, 5);
         handleMenuChoice(choice, students);
     }
 }

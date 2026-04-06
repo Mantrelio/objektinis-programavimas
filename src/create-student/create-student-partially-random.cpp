@@ -8,16 +8,16 @@ using std::endl;
 Student createStudentRandomGrades() {
     Student student = Student();
 
-    student.name = readSingleStringToken("Enter student name: ");
+    student.name = readSingleStringToken("Suveskite studento vardą: ");
     
-    student.surname = readSingleStringToken("Enter student surname: ");
+    student.surname = readSingleStringToken("Suveskite studento pavardę: ");
     
     student.examGrade = randomGrade();
-    cout << "Generated exam grade: " << student.examGrade << endl;
+    cout << "Sugeneruotas egzamino pažymys: " << student.examGrade << endl;
 
     int homeworkCount = randomGrade(3, 10);
     
-    cout << "Generated " << homeworkCount << " homework grades: ";
+    cout << "Sugeneruoti " << homeworkCount << " namu darbo pažymiai: ";
     for (int i = 0; i < homeworkCount; i++) {
         int grade = randomGrade();
         student.homeworkGrades.push_back(grade);

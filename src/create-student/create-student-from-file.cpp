@@ -60,7 +60,7 @@ vector<Student> createStudentsFromFile(const string& filename) {
     ifstream in(filename);
 
     if (!in) {
-        cout << "Failed to open file: " << filename << endl;
+        cout << "Nepavyko atidaryti failo: " << filename << endl;
         return studentsFromFile;
     }
 
@@ -83,7 +83,7 @@ vector<Student> createStudentsFromFile(const string& filename) {
         if (parseStudentLine(line, student, error)) {
             studentsFromFile.push_back(move(student));
         } else {
-            cout << "Skipping line " << lineNumber << ": " << error << endl;
+            cout << "Praleistos eilutės " << lineNumber << ": " << error << endl;
         }
     }
 

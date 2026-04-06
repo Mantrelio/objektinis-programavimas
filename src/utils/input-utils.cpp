@@ -21,12 +21,12 @@ int readIntInRange(const string& prompt, int min, int max) {
         istringstream iss(line);
 
         if(!(iss >> value) || (iss >> ws && !iss.eof())) {
-            cout << "Please enter a single valid integer." << endl;
+            cout << "Prašau įvesti vieną galiojantį sveikąjį skaičių." << endl;
             continue;
         }
 
         if (value < min || value > max) {
-            cout << "Value must be between " << min << " and " << max << "\n";
+            cout << "Reikšmė turi būti nuo " << min << " iki " << max << "\n";
             continue;
         }
 
@@ -45,11 +45,11 @@ string readSingleStringToken(const string& prompt) {
         istringstream iss(line);
 
         if (!(iss >> value)) {
-            cout << "Please enter a value." << endl;
+            cout << "Prašau įvesti reikšmę." << endl;
         }
 
         if (iss >> ws && !iss.eof()) {
-            cout << "Please enter only one word." << endl;
+            cout << "Prašau įvesti tik vieną žodį." << endl;
             continue;
         }
 
@@ -68,7 +68,7 @@ char readYesOrNo(const string& prompt) {
 
         istringstream iss(line);
         if (!(iss >> answer) || (iss >> extra)) {
-            cout << "Please enter only y or n" << endl;
+            cout << "Prašau įvesti tik y arba n" << endl;
             continue;
         }
 
