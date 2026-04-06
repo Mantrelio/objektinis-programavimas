@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "student-vector.h"
+#include <limits>
 
 int randomGrade(int min = 1, int max = 10) {
     return rand() % (max - min + 1) + min;
@@ -19,6 +20,74 @@ string randomName() {
 string randomSurname() {
     const string surnames[] = {"Jonaitis", "Petraitis", "Antanaitis", "Kazlauskas", "Zukauskas", "Jankauskas", "Paulauskas", "Stankevicius", "Vasiliauskas", "Baranauskas"};
     return surnames[rand() % 10];
+}
+
+int readIntInRange(const string& prompt, int min, int max) {
+    string line;
+    int value;
+    while (true) {
+        cout << prompt;
+        std::getline(cin >> std::ws, line);
+
+        std::istringstream iss(line);
+
+        if(!(iss >> value) || (iss >> std::ws && !iss.eof())) {
+            cout << "Please enter a single valid integer." << endl;
+            continue;
+        }
+
+        if (value < min || value > max) {
+            cout << "Value must be between " << min << " and " << max << "\n";
+            continue;
+        }
+
+        return value;
+    }
+}
+
+string readSingleStringToken(const string& prompt) {
+    string line;
+    string value;
+
+    while (true) {
+        cout << prompt;
+        std::getline(cin >> std::ws, line);
+
+        std::istringstream iss(line);
+
+        if (!(iss >> value)) {
+            cout << "Please enter a value." << endl;
+        }
+
+        if (iss >> std::ws && !iss.eof()) {
+            cout << "Please enter only one word." << endl;
+            continue;
+        }
+
+        return value;
+    }
+}
+
+char readYesOrNo(const string& prompt) {
+    string line;
+    char answer;
+    string extra;
+
+    while (true) {
+        cout << prompt;
+        std::getline(cin >> std::ws, line);
+
+        std::istringstream iss(line);
+        if (!(iss >> answer) || (iss >> extra)) {
+            cout << "Please enter only y or n" << endl;
+            continue;
+        }
+
+        char answerToUpper = toupper(answer);
+        if (answerToUpper == 'Y' || answer == 'N' ) {
+            return answerToUpper;
+        }
+    }
 }
 
 double calculateFinalGradeAverage(vector<int> homeworkGrades, int examGrade) {
@@ -70,27 +139,21 @@ void printResults(const vector<Student>& students, std::ostream& out) {
 Student createStudentManual() {
     Student student = Student();
 
-    cout << "Enter student name: ";
-    cin >> student.name;
+    student.name = readSingleStringToken("Enter student name: ");
     
-    cout << "Enter student surname: ";
-    cin >> student.surname;
+    student.surname = readSingleStringToken("Enter student surname: ");
     
-    cout << "Enter exam grade: ";
-    cin >> student.examGrade;
+    student.examGrade = readIntInRange("Enter student exam grade: ", 1, 10);
 
-    char continueHomework = 'y';
+    char continueHomework = 'Y';
     int homeworkNumber = 1;
     
-    while (continueHomework == 'y' || continueHomework == 'Y') {
-        cout << "Enter homework grade " << homeworkNumber << ": ";
-        int grade;
-        cin >> grade;
+    while (continueHomework == 'Y') {
+        int grade = readIntInRange("Enter homework grade: ", 1, 10);
         student.homeworkGrades.push_back(grade);
         homeworkNumber++;
         
-        cout << "Add another homework grade? (y/n): ";
-        cin >> continueHomework;
+        continueHomework = readYesOrNo("Add another homework grade? (y/n): ");
     }
     
     return student;
@@ -99,11 +162,9 @@ Student createStudentManual() {
 Student createStudentRandomGrades() {
     Student student = Student();
 
-    cout << "Enter student name: ";
-    cin >> student.name;
+    student.name = readSingleStringToken("Enter student name: ");
     
-    cout << "Enter student surname: ";
-    cin >> student.surname;
+    student.surname = readSingleStringToken("Enter student surname: ");
     
     student.examGrade = randomGrade();
     cout << "Generated exam grade: " << student.examGrade << endl;
@@ -140,6 +201,48 @@ Student createStudentFullyRandom() {
     return student;
 }
 
+bool parseStudentLine(const std::string& line, Student& out, std::string& error) {
+    std::istringstream iss(line);
+    string name, surname;
+
+    if (!(iss >> name >> surname)) {
+        error = "missing name/surname";
+        return false;
+    }
+
+    vector<int> grades;
+    string token;
+    
+    while (iss >> token) {
+        std::istringstream ts(token);
+        int grade;
+
+        if (!(ts >> grade) || !ts.eof()) {
+            error = "non-integer grade token: " + token;
+            return false;
+        }
+
+        if (grade < 1 || grade > 10) {
+            error = "grade out of [1;10] range";
+            return false;
+        }
+
+        grades.push_back(grade);
+    }
+
+    if (grades.size() < 2) {
+        error = "need at least 1 homework + 1 exam grade";
+        return false;
+    }
+
+    out.name = name;
+    out.surname = surname;
+    out.examGrade = grades.back();
+    grades.pop_back();
+    out.homeworkGrades = std::move(grades);
+    return true;
+}
+
 vector<Student> createStudentsFromFile(const string& filename) {
     vector<Student> studentsFromFile;
     std::ifstream in(filename);
@@ -153,32 +256,23 @@ vector<Student> createStudentsFromFile(const string& filename) {
     std::getline(in, headerLine);
 
     string line;
-    while (std::getline(in, line)) {
-        if (line.empty()) continue;
+    int lineNumber = 1;
 
-        std::istringstream iss(line);
+    while(std::getline(in, line)) {
+        ++lineNumber;
+
+        if (line.empty()) {
+            continue;
+        }
+
         Student student;
-        student.homeworkGrades.clear();
+        std::string error;
 
-        if (!(iss >> student.name >> student.surname)) {
-            continue; 
+        if (parseStudentLine(line, student, error)) {
+            studentsFromFile.push_back(std::move(student));
+        } else {
+            cout << "Skipping line " << lineNumber << ": " << error << endl;
         }
-
-        int grade;
-        vector<int> allGrades;
-        while (iss >> grade) {
-            allGrades.push_back(grade);
-        }
-
-        if (allGrades.empty()) {
-            continue; 
-        }
-
-        student.examGrade = allGrades.back();
-        allGrades.pop_back();
-        student.homeworkGrades = allGrades;
-
-        studentsFromFile.push_back(student);
     }
 
     return studentsFromFile;
@@ -221,33 +315,27 @@ void handleMenuChoice(int choice, vector<Student>& students) {
 }
 
 void collectStudents(vector<Student>& students) {
-    int choice = 0;
+    int choice;
 
-    while (choice != 5) {
+    while (true) {
         showMainMenu();
-        cin >> choice;
+        choice = readIntInRange("Choice: ", 1, 5);
         
         if (choice == 5) break;
-        
-        if (choice < 1 || choice > 5) {
-            cout << "Invalid option. Please try again." << endl;
-            continue;
-        }
         
         handleMenuChoice(choice, students);
     }
 }
 
 vector<Student> chooseSorting(const vector<Student>& students) {
-    int sortChoice = 0;
+    int sortChoice;
     cout << "\nChoose sorting option:" << endl;
     cout << "0 - Unsorted (original order)" << endl;
     cout << "1 - By name" << endl;
     cout << "2 - By surname" << endl;
     cout << "3 - By final average" << endl;
     cout << "4 - By final median" << endl;
-    cout << "Choice: ";
-    cin >> sortChoice;
+    sortChoice = readIntInRange("Choice: ", 0, 4);
 
     vector<Student> resultStudents = students;
 
@@ -288,12 +376,12 @@ vector<Student> chooseSorting(const vector<Student>& students) {
 void outputResults(const vector<Student>& students) {
     const vector<Student>& resultStudents = students;
 
-    int outputChoice = 0;
+    int outputChoice;
     cout << "\nChoose output method:" << endl;
     cout << "1 - Show results in console" << endl;
     cout << "2 - Save results to text file" << endl;
     cout << "Choice: ";
-    cin >> outputChoice;
+    outputChoice = readIntInRange("Choice: ", 1, 2);
 
     if (outputChoice == 2) {
         string outFilename;
