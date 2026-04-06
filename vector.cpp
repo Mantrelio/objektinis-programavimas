@@ -341,33 +341,46 @@ vector<Student> chooseSorting(const vector<Student>& students) {
 
     if (sortChoice == 0) {
         cout << "Showing unsorted results (original order)." << endl;
-    } else if (sortChoice >= 1 && sortChoice <= 4) {
+        return resultStudents;
+    }
+
+    cout << "\nChoose sorting order:" << endl;
+    cout << "1 - Ascending" << endl;
+    cout << "2 - Descending" << endl;
+    int orderChoice = readIntInRange("Choice: ", 1, 2);
+    bool ascending = (orderChoice == 1);
+
+    auto lessByChoice = [sortChoice](const Student& a, const Student& b) {
+        switch (sortChoice) {
+            case 1:
+                if (a.name == b.name) return a.surname < b.surname;
+                return a.name < b.name;
+            case 2:
+                if (a.surname == b.surname) return a.name < b.name;
+                return a.surname < b.surname;
+            case 3: {
+                double fa = calculateFinalGradeAverage(a.homeworkGrades, a.examGrade);
+                double fb = calculateFinalGradeAverage(b.homeworkGrades, b.examGrade);
+                return fa < fb;
+            }
+            case 4: {
+                double fa = calculateFinalGradeMedian(a.homeworkGrades, a.examGrade);
+                double fb = calculateFinalGradeMedian(b.homeworkGrades, b.examGrade);
+                return fa < fb;
+            }
+            default:
+                return a.name < b.name;
+        }
+    };
+
+    if (ascending) {
+        std::sort(resultStudents.begin(), resultStudents.end(), lessByChoice);
+    } else {
         std::sort(resultStudents.begin(), resultStudents.end(),
-            [sortChoice](const Student& a, const Student& b) {
-                switch (sortChoice) {
-                    case 1: 
-                        if (a.name == b.name) return a.surname < b.surname;
-                        return a.name < b.name;
-                    case 2: 
-                        if (a.surname == b.surname) return a.name < b.name;
-                        return a.surname < b.surname;
-                    case 3: {
-                        double fa = calculateFinalGradeAverage(a.homeworkGrades, a.examGrade);
-                        double fb = calculateFinalGradeAverage(b.homeworkGrades, b.examGrade);
-                        return fa < fb;
-                    }
-                    case 4: {
-                        double fa = calculateFinalGradeMedian(a.homeworkGrades, a.examGrade);
-                        double fb = calculateFinalGradeMedian(b.homeworkGrades, b.examGrade);
-                        return fa < fb;
-                    }
-                    default:
-                        return a.name < b.name;
-                }
+            [&lessByChoice](const Student& a, const Student& b) {
+                return lessByChoice(b, a);
             }
         );
-    } else {
-        cout << "Invalid sorting option. Showing unsorted results (original order)." << endl;
     }
 
     return resultStudents;
