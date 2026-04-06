@@ -84,7 +84,7 @@ char readYesOrNo(const string& prompt) {
         }
 
         char answerToUpper = toupper(answer);
-        if (answerToUpper == 'Y' || answer == 'N' ) {
+        if (answerToUpper == 'Y' || answerToUpper == 'N' ) {
             return answerToUpper;
         }
     }
