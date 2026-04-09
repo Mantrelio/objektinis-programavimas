@@ -1,9 +1,15 @@
 #pragma once
 
 #include <iostream>
+#include <istream>
+#include <ostream>
 #include <string>
 
-int read_int(std::istream& in, std::ostream& out, const std::string& prompt);
-int read_int_in_range(std::istream& in, std::ostream& out, const std::string& prompt, int min,
-    int max);
-std::string read_required_line(std::istream& in, std::ostream& out, const std::string& prompt);
+using std::istream;
+using std::ostream;
+using std::string;
+
+int readIntInRange(const string& prompt, int min, int max);
+string readSingleStringToken(const string& prompt);
+char readYesOrNo(const string& prompt);
+int readSingleIntToken(const string& prompt);
