@@ -12,4 +12,4 @@ void runHandleResultOutputPrompt(const vector<Student>& students);
 template <typename T>
 void handleResultOutput(const T& students, int outputChoice, const string& outFilename);
 
-void chooseOutputAndPrint(const vector<Student>& students);
+void chooseOutputAndPrint(vector<Student>& students);
