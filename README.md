@@ -26,33 +26,82 @@ Projektas buvo testuotas šioje aplinkoje:
 | Operatyvioji atmintis | 7.3 GiB |
 | Saugykla | SAMSUNG MZALQ256HAJD-000L2 NVMe SSD, 238.5 GB |
 
-Kompiliavimo komanda:
+## Reikalavimai
+
+- `g++` su C++17 palaikymu
+- `make`
+
+Greita patikra Linux aplinkoje:
 
 ```bash
+g++ --version
+make --version
+```
+
+## Kompiliavimas
+
+1. Pereikite į projekto aplanką.
+2. Surinkite programą su `make`.
+
+```bash
+cd /home/mantrimas/Documents/OOP/objektinis-programavimas
 make
 ```
+
+Tai sukuria vykdomąjį failą `student-vector`.
 
 ## Paleidimas
 
-1. Surinkti projektą:
-
-```bash
-make
-```
-
-2. Paleisti programą:
+Paleiskite programą:
 
 ```bash
 ./student-vector
 ```
 
-3. Jei reikia išvalyti sugeneruotus failus:
+Išvalymas (jei reikia pilno perkompiliavimo):
 
 ```bash
 make clean
 ```
 
-## Testavimo rezultatas
+Pilnas perkompiliavimas:
+
+```bash
+make clean && make
+```
+
+## Kaip paleisti našumo testus
+
+Interaktyviame meniu pasirinkite:
+
+1. `8 - Testuoti studentu skirstyma i nuskriaustus ir protingus`
+2. Konteinerį:
+	`1 - vector<Student>`
+	`2 - list<Student>`
+	`3 - deque<Student>`
+3. Strategiją:
+	`1 - Pirma`
+	`2 - Antra`
+	`3 - Trecia`
+
+Testai paleidžiami failams:
+
+- `students1000`
+- `students10000`
+- `students100000`
+- `students1000000`
+- `students10000000`
+
+Programa pateikia laikus šioms dalims:
+
+- failo nuskaitymas
+- rūšiavimas
+- skirstymas į `nuskriausti` ir `protingi`
+- bendras laikas
+
+## Testų rezultatų demonstracija
+
+Žemiau pateikti užfiksuoti rezultatų grafikai kiekvienam konteineriui:
 
 ### `vector<Student>`
 
@@ -65,6 +114,8 @@ make clean
 ### `deque<Student>`
 
 ![deque<Student> rezultatai](assets/student-deque.png)
+
+Pastaba: rezultatai priklauso nuo aparatinės įrangos, kompiliatoriaus versijos, disko spartos ir tuo metu veikiančių foninių procesų.
 
 ## Struktūra
 
