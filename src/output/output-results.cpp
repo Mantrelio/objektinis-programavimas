@@ -60,8 +60,6 @@ void handleResultOutput(const T& students, int outputChoice, const string& outFi
                 throw runtime_error("failed while writing results to file");
             }
 
-            cout << "Rezultatai išsaugoti: " << outFilename << endl;
-
             if (outputChoice == 3) {
                 outputResults(students, cout);
             }
@@ -94,14 +92,14 @@ void runHandleResultOutputPrompt(const vector<Student>& students) {
     handleResultOutput(students, outputChoice, "");
 }
 
-void chooseOutputAndPrint(const vector<Student>& students) {
+void chooseOutputAndPrint(vector<Student>& students) {
     if (students.empty()) {
         cout << "Studentu sarasas tuscias" << endl;
         return;
     }
 
-    const vector<Student> sortedStudents = runSortStudentsChoicePrompt(students);
-    runHandleResultOutputPrompt(sortedStudents);
+    runSortStudentsChoicePrompt(students);
+    runHandleResultOutputPrompt(students);
 }
 
 template void outputResults(const vector<Student>& students, std::ostream& out);

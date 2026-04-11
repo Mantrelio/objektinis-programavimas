@@ -3,7 +3,7 @@
 #include "student-vector.h"
 
 template <typename T>
-T runSortStudentsChoicePrompt(const T& students);
+void runSortStudentsChoicePrompt(T& students);
 
 template <typename T>
-T sortStudents(const T& students, int sortChoice, bool ascending);
+void sortStudents(T& students, int sortChoice, bool ascending);
