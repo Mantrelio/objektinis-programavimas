@@ -28,7 +28,7 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename, int st
     double totalSplitSeconds = 0.0;
     double totalIterationSeconds = 0.0;
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 5; i++) {
         const auto loadStart = std::chrono::steady_clock::now();
         Container students = createStudentsFromFile<Container>(filename);
         const auto loadEnd = std::chrono::steady_clock::now();
@@ -64,10 +64,10 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename, int st
         totalIterationSeconds += iterationSeconds;
     }
 
-    const double averageLoadSeconds = totalLoadSeconds / 1.0;
-    const double averageSortSeconds = totalSortSeconds / 1.0;
-    const double averageSplitSeconds = totalSplitSeconds / 1.0;
-    const double averageIterationSeconds = totalIterationSeconds / 1.0;
+    const double averageLoadSeconds = totalLoadSeconds / 5.0;
+    const double averageSortSeconds = totalSortSeconds / 5.0;
+    const double averageSplitSeconds = totalSplitSeconds / 5.0;
+    const double averageIterationSeconds = totalIterationSeconds / 5.0;
 
     cout << std::fixed << std::setprecision(6)
          << "\nVidurkiai per 5 iteracijas:\n"
