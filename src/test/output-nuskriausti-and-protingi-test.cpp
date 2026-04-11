@@ -16,10 +16,9 @@ using std::cout;
 using std::endl;
 
 template <typename Container>
-void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
+void outputNuskriaustiAndProtingiTestForContainer(const string& filename, int strategyChoice) {
     const int sortChoice = 1;
     const bool ascending = true;
-    const int outputChoice = 2;
 
     string outFilename = "nuskriausti.txt";
     string outFilename2 = "protingi.txt";
@@ -29,7 +28,7 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
     double totalSplitSeconds = 0.0;
     double totalIterationSeconds = 0.0;
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 1; i++) {
         const auto loadStart = std::chrono::steady_clock::now();
         Container students = createStudentsFromFile<Container>(filename);
         const auto loadEnd = std::chrono::steady_clock::now();
@@ -39,15 +38,20 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
         const auto sortEnd = std::chrono::steady_clock::now();
 
         const auto splitStart = std::chrono::steady_clock::now();
-        std::pair<Container, Container> split = sortNuskriaustiAndProtingiFirstStrategy(students);
+
+        switch(strategyChoice) {
+            case 1:
+                sortNuskriaustiAndProtingiFirstStrategy(students);
+                break;
+            case 2:
+                sortNuskriaustiAndProtingiSecondStrategy(students);
+                break;
+            case 3:
+                sortNuskriaustiAndProtingiThirdStrategy(students);
+                break;
+        }
+
         const auto splitEnd = std::chrono::steady_clock::now();
-
-        Container nuskriausti = split.first;
-        Container protingi = split.second;
-
-        handleResultOutput(nuskriausti, outputChoice, outFilename2);
-
-        handleResultOutput(protingi, outputChoice, outFilename);
 
         const double loadSeconds = std::chrono::duration<double>(loadEnd - loadStart).count();
         const double sortSeconds = std::chrono::duration<double>(sortEnd - sortStart).count();
@@ -60,10 +64,10 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
         totalIterationSeconds += iterationSeconds;
     }
 
-    const double averageLoadSeconds = totalLoadSeconds / 5.0;
-    const double averageSortSeconds = totalSortSeconds / 5.0;
-    const double averageSplitSeconds = totalSplitSeconds / 5.0;
-    const double averageIterationSeconds = totalIterationSeconds / 5.0;
+    const double averageLoadSeconds = totalLoadSeconds / 1.0;
+    const double averageSortSeconds = totalSortSeconds / 1.0;
+    const double averageSplitSeconds = totalSplitSeconds / 1.0;
+    const double averageIterationSeconds = totalIterationSeconds / 1.0;
 
     cout << std::fixed << std::setprecision(6)
          << "\nVidurkiai per 5 iteracijas:\n"
@@ -73,19 +77,19 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
          << "  Is viso: " << averageIterationSeconds << " s" << endl;
 }
 
-void runContainerTestsForAllFiles(int containerChoice, const vector<string>& files) {
+void runContainerTestsForAllFiles(int containerChoice, int strategyChoice, const vector<string>& files) {
     for (const string& filename : files) {
         cout << "\n=== Testuojamas failas: " << filename << " ===" << endl;
 
         switch (containerChoice) {
             case 1:
-                outputNuskriaustiAndProtingiTestForContainer<vector<Student>>(filename);
+                outputNuskriaustiAndProtingiTestForContainer<vector<Student>>(filename, strategyChoice);
                 break;
             case 2:
-                outputNuskriaustiAndProtingiTestForContainer<std::list<Student>>(filename);
+                outputNuskriaustiAndProtingiTestForContainer<std::list<Student>>(filename, strategyChoice);
                 break;
             case 3:
-                outputNuskriaustiAndProtingiTestForContainer<std::deque<Student>>(filename);
+                outputNuskriaustiAndProtingiTestForContainer<std::deque<Student>>(filename, strategyChoice);
                 break;
         }
     }
@@ -101,5 +105,12 @@ void outputNuskriaustiAndProtingiTestForAllStudentsTxtFiles() {
 
     const int containerChoice = readIntInRange("Pasirinkimas: ", 1, 3);
 
-    runContainerTestsForAllFiles(containerChoice, files);
+    cout << "\nPasirinkite strategija:" << endl;
+    cout << "1 - Pirma" << endl;
+    cout << "2 - Antra" << endl;
+    cout << "3 - Trecia" << endl;
+
+    const int strategyChoice = readIntInRange("Pasirinkimas: ", 1, 3);
+
+    runContainerTestsForAllFiles(containerChoice, strategyChoice, files);
 }
