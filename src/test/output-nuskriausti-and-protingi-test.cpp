@@ -39,7 +39,7 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
         const auto sortEnd = std::chrono::steady_clock::now();
 
         const auto splitStart = std::chrono::steady_clock::now();
-        std::pair<Container, Container> split = sortNuskriaustiAndProtingi(students);
+        std::pair<Container, Container> split = sortNuskriaustiAndProtingiFirstStrategy(students);
         const auto splitEnd = std::chrono::steady_clock::now();
 
         Container nuskriausti = split.first;
