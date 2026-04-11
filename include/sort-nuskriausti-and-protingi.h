@@ -10,3 +10,6 @@ std::pair<T, T> sortNuskriaustiAndProtingiFirstStrategy(const T& students);
 
 template <typename T>
 T sortNuskriaustiAndProtingiSecondStrategy(T& students);
+
+template <typename T>
+std::pair<T, T> sortNuskriaustiAndProtingiThirdStrategy(T& students);
