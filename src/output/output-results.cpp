@@ -91,6 +91,6 @@ void chooseOutputAndPrint(const vector<Student>& students) {
         return;
     }
 
-    const vector<Student> sortedStudents = sortStudents(students);
+    const vector<Student> sortedStudents = runSortStudentsChoicePrompt(students);
     handleResultOutput(sortedStudents);
 }

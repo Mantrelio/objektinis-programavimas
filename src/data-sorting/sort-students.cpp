@@ -53,7 +53,7 @@ vector<Student> sortStudents(const vector<Student>& students, int sortChoice, bo
     return resultStudents;
 }
 
-vector<Student> sortStudents(const vector<Student>& students) {
+vector<Student> runSortStudentsChoicePrompt(const vector<Student>& students) {
     int sortChoice;
     cout << "\nPasirinkite rūšiavimo būdą:" << endl;
     cout << "0 - Nerūšiuotas (pradinė tvarka)" << endl;

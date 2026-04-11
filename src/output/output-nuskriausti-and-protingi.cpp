@@ -18,10 +18,10 @@ void outputNuskriaustiAndProtingi(vector<Student> &students) {
     }
 
     cout << "\n--- Nuskriausti ---" << endl;
-    sortStudents(nuskriausti);
+    runSortStudentsChoicePrompt(nuskriausti);
 
     cout << "\n--- Protingi ---" << endl;
-    sortStudents(protingi);
+    runSortStudentsChoicePrompt(protingi);
 
     cout << "\n--- Nuskriausti ---" << endl;
     handleResultOutput(nuskriausti);
