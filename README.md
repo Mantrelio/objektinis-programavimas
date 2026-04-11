@@ -1,79 +1,80 @@
-# Testavimo rezultatai
+# Studentų valdymo programa
 
-Šiame dokumente pateikiami programos našumo matavimai skirtingo dydžio duomenų imtims. Kiekvienai imčiai atliekami du bandymai (meniu punktai **7** ir **8**): kiekvienas veiksmas kartojamas **5 kartus** ir skaičiuojamas **vidutinis laikas** (vienas įrašas = vieno bandymo trukmė).
+Tai C++17 projektas studentų duomenims nuskaityti, generuoti, rūšiuoti, skaidyti į dvi grupes ir išvesti į ekraną arba į failą. Programa palaiko kelis konteinerių tipus: `vector`, `list` ir `deque`.
 
-1. **Duomenų generavimas ir įrašymas** — studentų įrašai sugeneruojami ir įrašomi į vieną failą (`studentai<N>`).
-2. **Skaidymas į kategorijas** — įrašai nuskaitomi iš failo, skaidomi į **protingus** ir **kvailius** (pagal galutinį balą), rezultatai rašomi į atskirus failus; atskirai matuojami nuskaitymas, rūšiavimas ir rašymas.
+## Funkcionalumas
 
----
+- studentų įrašų nuskaitymas iš failo
+- studentų kūrimas rankiniu būdu arba generuojant atsitiktinius duomenis
+- galutinio pažymio skaičiavimas pagal vidurkį arba medianą
+- studentų rūšiavimas pagal vardą, pavardę arba galutinį pažymį
+- studentų skaidymas į `nuskriausti` ir `protingi`
+- rezultatų išvedimas į ekraną arba į tekstinį failą
+- testai didelėms duomenų imtims ir skirtingiems konteineriams
 
-## 1000 studentų
+## Sistemos specifikacijos
 
-### Generavimas ir įrašymas į failą
+Projektas buvo testuotas šioje aplinkoje:
 
+| Paskirtis | Reikšmė |
+| --- | --- |
+| Operacinė sistema | Ubuntu 24.04.4 LTS |
+| Branduolys | 6.17.0-20-generic |
+| Kompiliatorius | g++ 13.3.0 |
+| C++ standartas | C++17 |
+| Procesorius | Intel Core i5-1035G1 @ 1.00 GHz |
+| Operatyvioji atmintis | 7.3 GiB |
 
-![1000 studentų — generavimas ir įrašymas](assets/studentai1000.png)
+Kompiliavimo komanda:
 
-### Nuskaitymas, skaidymas ir rašymas į atskirus failus
+```bash
+make
+```
 
+## Paleidimas
 
-![1000 studentų — skaidymas](assets/studentaisplit1000.png)
+1. Surinkti projektą:
 
----
+```bash
+make
+```
 
-## 10 000 studentų
+2. Paleisti programą:
 
-### Generavimas ir įrašymas į failą
+```bash
+./student-vector
+```
 
+3. Jei reikia išvalyti sugeneruotus failus:
 
-![10 000 studentų — generavimas ir įrašymas](assets/studentai10000.png)
+```bash
+make clean
+```
 
-### Nuskaitymas, skaidymas ir rašymas į atskirus failus
+## Projektinis vaizdas
 
+### `vector<Student>`
 
+![vector<Student> rezultatai](assets/student-vector.png)
 
-![10 000 studentų — skaidymas](assets/studentaisplit10000.png)
+### `list<Student>`
 
----
+![list<Student> rezultatai](assets/student-list.png)
 
-## 100 000 studentų
+### `deque<Student>`
 
-### Generavimas ir įrašymas į failą
+![deque<Student> rezultatai](assets/student-deque.png)
 
+## Struktūra
 
-![100 000 studentų — generavimas ir įrašymas](assets/studentai100000.png)
+- `include/` - antraštiniai failai
+- `src/` - pagrindinis programos kodas
+- `assets/` - projekto vaizdai
+- `data/` - pradiniai duomenų failai
+- `students1000`, `students10000`, `students100000`, `students1000000`, `students10000000` - didelių imčių failai bandymams
 
-### Nuskaitymas, skaidymas ir rašymas į atskirus failus
+## Pastabos
 
-![100 000 studentų — skaidymas](assets/studentaisplit100000.png)
-
----
-
-## 1 000 000 studentų
-
-### Generavimas ir įrašymas į failą
-
-
-![1 000 000 studentų — generavimas ir įrašymas](assets/studentai1000000.png)
-
-### Nuskaitymas, skaidymas ir rašymas į atskirus failus
-
-
-![1 000 000 studentų — skaidymas](assets/studentaisplit1000000.png)
-
----
-
-## 10 000 000 studentų
-
-### Generavimas ir įrašymas į failą
-
-
-![10 000 000 studentų — generavimas ir įrašymas](assets/studentai10000000.png)
-
-### Nuskaitymas, skaidymas ir rašymas į atskirus failus
-
-![10 000 000 studentų — skaidymas](assets/studentaisplit10000000.png)
-
----
-
-*Matavimai atlikti toje pačioje aplinkoje (meniu punktai 7 ir 8, po 5 bandymus); konkretūs skaičiai gali skirtis priklausomai nuo aparatinės įrangos ir apkrovos.*
+- Programa naudoja `make` failą surinkimui.
+- Rikiavimas veikia tiek su `vector`, tiek su `list`, tiek su `deque`.
+- Didelių duomenų imčių testai skirti palyginti nuskaitymo, rūšiavimo ir skaidymo laikus.
