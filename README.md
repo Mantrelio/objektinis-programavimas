@@ -51,7 +51,7 @@ make
 make clean
 ```
 
-## Projektinis vaizdas
+## Testavimo rezultatas
 
 ### `vector<Student>`
 
