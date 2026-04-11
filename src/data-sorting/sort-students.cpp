@@ -14,11 +14,9 @@ using std::endl;
 using std::sort;
 
 template <typename T>
-T sortStudents(const T& students, int sortChoice, bool ascending) {
-    T resultStudents = students;
-
+void sortStudents(T& students, int sortChoice, bool ascending) {
     if (sortChoice == 0) {
-        return resultStudents;
+        return;
     }
 
     auto lessByChoice = [sortChoice](const Student& a, const Student& b) {
@@ -46,29 +44,27 @@ T sortStudents(const T& students, int sortChoice, bool ascending) {
 
     if (ascending) {
         if constexpr (std::is_same_v<T, std::list<Student>>) {
-            resultStudents.sort(lessByChoice);
+            students.sort(lessByChoice);
         } else {
-            sort(resultStudents.begin(), resultStudents.end(), lessByChoice);
+            sort(students.begin(), students.end(), lessByChoice);
         }
     } else {
         if constexpr (std::is_same_v<T, std::list<Student>>) {
-            resultStudents.sort([&lessByChoice](const Student& a, const Student& b) {
+            students.sort([&lessByChoice](const Student& a, const Student& b) {
                 return lessByChoice(b, a);
             });
         } else {
-            sort(resultStudents.begin(), resultStudents.end(),
+            sort(students.begin(), students.end(),
                 [&lessByChoice](const Student& a, const Student& b) {
                     return lessByChoice(b, a);
                 }
             );
         }
     }
-
-    return resultStudents;
 }
 
 template <typename T>
-T runSortStudentsChoicePrompt(const T& students) {
+void runSortStudentsChoicePrompt(T& students) {
     int sortChoice;
     cout << "\nPasirinkite rūšiavimo būdą:" << endl;
     cout << "0 - Nerūšiuotas (pradinė tvarka)" << endl;
@@ -80,7 +76,7 @@ T runSortStudentsChoicePrompt(const T& students) {
 
     if (sortChoice == 0) {
         cout << "Rodomi nerūšiuoti rezultatai (pradinėje tvarkoj)." << endl;
-        return students;
+        return;
     }
 
     cout << "\nPasirinkite rūšiavimo tvarką:" << endl;
@@ -88,13 +84,13 @@ T runSortStudentsChoicePrompt(const T& students) {
     cout << "2 - Mažėjanti" << endl;
     int orderChoice = readIntInRange("Pasirinkimas: ", 1, 2);
 
-    return sortStudents(students, sortChoice, orderChoice == 1);
+    sortStudents(students, sortChoice, orderChoice == 1);
 }
 
-template vector<Student> sortStudents(const vector<Student>&, int, bool);
-template std::list<Student> sortStudents(const std::list<Student>&, int, bool);
-template std::deque<Student> sortStudents(const std::deque<Student>&, int, bool);
+template void sortStudents(vector<Student>&, int, bool);
+template void sortStudents(std::list<Student>&, int, bool);
+template void sortStudents(std::deque<Student>&, int, bool);
 
-template vector<Student> runSortStudentsChoicePrompt(const vector<Student>&);
-template std::list<Student> runSortStudentsChoicePrompt(const std::list<Student>&);
-template std::deque<Student> runSortStudentsChoicePrompt(const std::deque<Student>&);
+template void runSortStudentsChoicePrompt(vector<Student>&);
+template void runSortStudentsChoicePrompt(std::list<Student>&);
+template void runSortStudentsChoicePrompt(std::deque<Student>&);
