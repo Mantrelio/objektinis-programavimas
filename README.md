@@ -24,6 +24,7 @@ Projektas buvo testuotas šioje aplinkoje:
 | C++ standartas | C++17 |
 | Procesorius | Intel Core i5-1035G1 @ 1.00 GHz |
 | Operatyvioji atmintis | 7.3 GiB |
+| Saugykla | SAMSUNG MZALQ256HAJD-000L2 NVMe SSD, 238.5 GB |
 
 Kompiliavimo komanda:
 
