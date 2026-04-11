@@ -1,87 +1,111 @@
 #include "output-nuskriausti-and-protingi-test.h"
 #include "input-utils.h"
 #include "create-student.h"
-#include "output-nuskriausti-and-protingi.h"
-#include "student-grading.h"
 #include "sort-students.h"
+#include "sort-nuskriausti-and-protingi.h"
 #include "output-results.h"
 
 #include <chrono>
+#include <deque>
 #include <iomanip>
 #include <iostream>
+#include <list>
+#include <vector>
 
 using std::cout;
 using std::endl;
 
-void outputNuskriaustiAndProtingiTest() {
-    const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
+template <typename Container>
+void outputNuskriaustiAndProtingiTestForContainer(const string& containerName, const string& filename) {
     const int sortChoice = 1;
     const bool ascending = true;
     const int outputChoice = 2;
-    const string outFilename = readSingleStringToken("Suveskite protingu failo pavadinima: ");
-    const string outFilename2 = readSingleStringToken("Suveskite nuskriaustu failo pavadinima: ");
+
+    string outFilename = "nuskriausti.txt";
+    string outFilename2 = "protingi.txt";
 
     double totalLoadSeconds = 0.0;
     double totalSortSeconds = 0.0;
-    double totalOutputSeconds = 0.0;
+    double totalSplitSeconds = 0.0;
     double totalIterationSeconds = 0.0;
+
+    cout << "\nBandomas konteineris: " << containerName << endl;
 
     for (int i = 0; i < 5; i++) {
         const auto loadStart = std::chrono::steady_clock::now();
-        vector<Student> students = createStudentsFromFile(filename);
+        Container students = createStudentsFromFile<Container>(filename);
         const auto loadEnd = std::chrono::steady_clock::now();
 
         const auto sortStart = std::chrono::steady_clock::now();
-        vector<Student> nuskriausti, protingi;
-        for (Student student : students) {
-            if (calculateFinalGradeAverage(student.homeworkGrades, student.examGrade) >= 5) {
-                protingi.push_back(student);
-            } else {
-                nuskriausti.push_back(student);
-            }
-        }
+        students = sortStudents(students, sortChoice, ascending);
+        const auto sortEnd = std::chrono::steady_clock::now();
+
+        const auto splitStart = std::chrono::steady_clock::now();
+        std::pair<Container, Container> split = sortNuskriaustiAndProtingi(students);
+        const auto splitEnd = std::chrono::steady_clock::now();
+
+        Container nuskriausti = split.first;
+        Container protingi = split.second;
 
         nuskriausti = sortStudents(nuskriausti, sortChoice, ascending);
 
         protingi = sortStudents(protingi, sortChoice, ascending);
 
-        const auto sortEnd = std::chrono::steady_clock::now();
-
-        const auto outputStart = std::chrono::steady_clock::now();
-
         handleResultOutput(nuskriausti, outputChoice, outFilename2);
 
         handleResultOutput(protingi, outputChoice, outFilename);
 
-        const auto outputEnd = std::chrono::steady_clock::now();
-
         const double loadSeconds = std::chrono::duration<double>(loadEnd - loadStart).count();
         const double sortSeconds = std::chrono::duration<double>(sortEnd - sortStart).count();
-        const double outputSeconds = std::chrono::duration<double>(outputEnd - outputStart).count();
-        const double iterationSeconds = loadSeconds + sortSeconds + outputSeconds;
+        const double splitSeconds = std::chrono::duration<double>(splitEnd - splitStart).count();
+        const double iterationSeconds = loadSeconds + sortSeconds + splitSeconds;
 
         totalLoadSeconds += loadSeconds;
         totalSortSeconds += sortSeconds;
-        totalOutputSeconds += outputSeconds;
+        totalSplitSeconds += splitSeconds;
         totalIterationSeconds += iterationSeconds;
-
-        cout << std::fixed << std::setprecision(6)
-             << "Iteracija " << (i + 1) << ":\n"
-             << "  Failo nuskaitymas: " << loadSeconds << " s\n"
-             << "  Rusiavimas: " << sortSeconds << " s\n"
-             << "  Rezultatu spausdinimas: " << outputSeconds << " s\n"
-             << "  Is viso: " << iterationSeconds << " s" << endl;
     }
 
     const double averageLoadSeconds = totalLoadSeconds / 5.0;
     const double averageSortSeconds = totalSortSeconds / 5.0;
-    const double averageOutputSeconds = totalOutputSeconds / 5.0;
+    const double averageSplitSeconds = totalSplitSeconds / 5.0;
     const double averageIterationSeconds = totalIterationSeconds / 5.0;
 
     cout << std::fixed << std::setprecision(6)
          << "\nVidurkiai per 5 iteracijas:\n"
          << "  Failo nuskaitymas: " << averageLoadSeconds << " s\n"
          << "  Rusiavimas: " << averageSortSeconds << " s\n"
-         << "  Rezultatu spausdinimas: " << averageOutputSeconds << " s\n"
+         << "  Rezultatu spausdinimas: " << averageSplitSeconds << " s\n"
          << "  Is viso: " << averageIterationSeconds << " s" << endl;
+}
+
+void runContainerTestsForAllFiles(int containerChoice, const vector<string>& files) {
+    for (const string& filename : files) {
+        cout << "\n=== Testuojamas failas: " << filename << " ===" << endl;
+
+        switch (containerChoice) {
+            case 1:
+                outputNuskriaustiAndProtingiTestForContainer<vector<Student>>("vector<Student>", filename);
+                break;
+            case 2:
+                outputNuskriaustiAndProtingiTestForContainer<std::list<Student>>("list<Student>", filename);
+                break;
+            case 3:
+                outputNuskriaustiAndProtingiTestForContainer<std::deque<Student>>("deque<Student>", filename);
+                break;
+        }
+    }
+}
+
+void outputNuskriaustiAndProtingiTestForAllStudentsTxtFiles() {
+    const vector<string> files = {"students1000", "students10000", "students100000", "stuednts1000000", "students10000000"};
+
+    cout << "\nPasirinkite konteinerio tipą:" << endl;
+    cout << "1 - vector<Student>" << endl;
+    cout << "2 - list<Student>" << endl;
+    cout << "3 - deque<Student>" << endl;
+
+    const int containerChoice = readIntInRange("Pasirinkimas: ", 1, 3);
+
+    runContainerTestsForAllFiles(containerChoice, files);
 }

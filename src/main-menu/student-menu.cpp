@@ -52,7 +52,7 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             const string filename =
                 readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
             try {
-                const vector<Student> fileStudents = createStudentsFromFile(filename);
+                const vector<Student> fileStudents = createStudentsFromFile<vector<Student>>(filename);
                 if (fileStudents.empty()) {
                     cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
                             "(tuščias failas arba netinkamos eilutės)."
@@ -71,7 +71,7 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             break;
         case 6: {
             const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
-            vector<Student> students = createStudentsFromFile(filename);
+            vector<Student> students = createStudentsFromFile<vector<Student>>(filename);
             outputNuskriaustiAndProtingi(students);
             break;
         }
@@ -79,7 +79,7 @@ void handleMenuChoice(int choice, vector<Student>& students) {
             handleGenerateStudentListTest();
             break;
         case 8: 
-            outputNuskriaustiAndProtingiTest();
+            outputNuskriaustiAndProtingiTestForAllStudentsTxtFiles();
             break;
         case 9:
             chooseOutputAndPrint(students);

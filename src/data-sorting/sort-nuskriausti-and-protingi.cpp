@@ -1,16 +1,8 @@
 #include "sort-nuskriausti-and-protingi.h"
 
-#include "student-grading.h"
+#include <deque>
+#include <list>
 
-std::pair<vector<Student>, vector<Student>> sortNuskriaustiAndProtingi(const vector<Student>& students) {
-    vector<Student> nuskriausti, protingi;
-    for (Student student : students) {
-        if (calculateFinalGradeAverage(student.homeworkGrades, student.examGrade) >= 5) {
-            protingi.push_back(student);
-        } else {
-            nuskriausti.push_back(student);
-        }
-    }
-
-    return {nuskriausti, protingi};
-}
+template std::pair<vector<Student>, vector<Student>> sortNuskriaustiAndProtingi(const vector<Student>&);
+template std::pair<std::list<Student>, std::list<Student>> sortNuskriaustiAndProtingi(const std::list<Student>&);
+template std::pair<std::deque<Student>, std::deque<Student>> sortNuskriaustiAndProtingi(const std::deque<Student>&);

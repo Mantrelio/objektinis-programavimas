@@ -2,5 +2,8 @@
 
 #include "student-vector.h"
 
-vector<Student> runSortStudentsChoicePrompt(const vector<Student>& students);
-vector<Student> sortStudents(const vector<Student>& students, int sortChoice, bool ascending);
+template <typename T>
+T runSortStudentsChoicePrompt(const T& students);
+
+template <typename T>
+T sortStudents(const T& students, int sortChoice, bool ascending);

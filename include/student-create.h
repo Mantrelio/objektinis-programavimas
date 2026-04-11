@@ -11,7 +11,9 @@ Student createStudentManual();
 Student createStudentRandomGrades();
 Student createStudentFullyRandom();
 Student create_student_fully_random_silent();
-vector<Student> createStudentsFromFile(const string& filename);
+
+template <typename T>
+T createStudentsFromFile(const string& filename);
 
 /** Reads the file once and appends each student to protingi or kvaili by final average.
  *  Does not keep a full copy of all students in a third vector (lower peak memory). */

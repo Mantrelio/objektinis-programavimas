@@ -5,13 +5,17 @@
 
 #include <algorithm>
 #include <iostream>
+#include <deque>
+#include <list>
+#include <type_traits>
 
 using std::cout;
 using std::endl;
 using std::sort;
 
-vector<Student> sortStudents(const vector<Student>& students, int sortChoice, bool ascending) {
-    vector<Student> resultStudents = students;
+template <typename T>
+T sortStudents(const T& students, int sortChoice, bool ascending) {
+    T resultStudents = students;
 
     if (sortChoice == 0) {
         return resultStudents;
@@ -41,19 +45,30 @@ vector<Student> sortStudents(const vector<Student>& students, int sortChoice, bo
     };
 
     if (ascending) {
-        sort(resultStudents.begin(), resultStudents.end(), lessByChoice);
+        if constexpr (std::is_same_v<T, std::list<Student>>) {
+            resultStudents.sort(lessByChoice);
+        } else {
+            sort(resultStudents.begin(), resultStudents.end(), lessByChoice);
+        }
     } else {
-        sort(resultStudents.begin(), resultStudents.end(),
-            [&lessByChoice](const Student& a, const Student& b) {
+        if constexpr (std::is_same_v<T, std::list<Student>>) {
+            resultStudents.sort([&lessByChoice](const Student& a, const Student& b) {
                 return lessByChoice(b, a);
-            }
-        );
+            });
+        } else {
+            sort(resultStudents.begin(), resultStudents.end(),
+                [&lessByChoice](const Student& a, const Student& b) {
+                    return lessByChoice(b, a);
+                }
+            );
+        }
     }
 
     return resultStudents;
 }
 
-vector<Student> runSortStudentsChoicePrompt(const vector<Student>& students) {
+template <typename T>
+T runSortStudentsChoicePrompt(const T& students) {
     int sortChoice;
     cout << "\nPasirinkite rūšiavimo būdą:" << endl;
     cout << "0 - Nerūšiuotas (pradinė tvarka)" << endl;
@@ -75,3 +90,11 @@ vector<Student> runSortStudentsChoicePrompt(const vector<Student>& students) {
 
     return sortStudents(students, sortChoice, orderChoice == 1);
 }
+
+template vector<Student> sortStudents(const vector<Student>&, int, bool);
+template std::list<Student> sortStudents(const std::list<Student>&, int, bool);
+template std::deque<Student> sortStudents(const std::deque<Student>&, int, bool);
+
+template vector<Student> runSortStudentsChoicePrompt(const vector<Student>&);
+template std::list<Student> runSortStudentsChoicePrompt(const std::list<Student>&);
+template std::deque<Student> runSortStudentsChoicePrompt(const std::deque<Student>&);

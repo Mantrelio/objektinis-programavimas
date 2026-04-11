@@ -1,7 +1,9 @@
-#include "student-vector.h"
+#include "create-student.h"
 #include "parse-student-line.h"
 
+#include <deque>
 #include <fstream>
+#include <list>
 #include <sstream>
 #include <utility>
 
@@ -55,8 +57,9 @@ bool parseStudentLine(const string& line, Student& out, string& error) {
     return true;
 }
 
-vector<Student> createStudentsFromFile(const string& filename) {
-    vector<Student> studentsFromFile;
+template <typename T>
+T createStudentsFromFile(const string& filename) {
+    T studentsFromFile;
     ifstream in(filename);
 
     if (!in) {
@@ -89,3 +92,7 @@ vector<Student> createStudentsFromFile(const string& filename) {
 
     return studentsFromFile;
 }
+
+template vector<Student> createStudentsFromFile(const string& filename);
+template std::list<Student> createStudentsFromFile(const string& filename);
+template std::deque<Student> createStudentsFromFile(const string& filename);

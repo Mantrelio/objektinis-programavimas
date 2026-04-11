@@ -5,4 +5,6 @@
 Student createStudentManual();
 Student createStudentRandomGrades();
 Student createStudentFullyRandom();
-vector<Student> createStudentsFromFile(const string& filename);
+
+template <typename T>
+T createStudentsFromFile(const string& filename);
