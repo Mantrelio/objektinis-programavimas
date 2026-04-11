@@ -16,7 +16,7 @@ using std::cout;
 using std::endl;
 
 template <typename Container>
-void outputNuskriaustiAndProtingiTestForContainer(const string& containerName, const string& filename) {
+void outputNuskriaustiAndProtingiTestForContainer(const string& filename) {
     const int sortChoice = 1;
     const bool ascending = true;
     const int outputChoice = 2;
@@ -29,15 +29,13 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& containerName, c
     double totalSplitSeconds = 0.0;
     double totalIterationSeconds = 0.0;
 
-    cout << "\nBandomas konteineris: " << containerName << endl;
-
     for (int i = 0; i < 5; i++) {
         const auto loadStart = std::chrono::steady_clock::now();
         Container students = createStudentsFromFile<Container>(filename);
         const auto loadEnd = std::chrono::steady_clock::now();
 
         const auto sortStart = std::chrono::steady_clock::now();
-        students = sortStudents(students, sortChoice, ascending);
+        sortStudents(students, sortChoice, ascending);
         const auto sortEnd = std::chrono::steady_clock::now();
 
         const auto splitStart = std::chrono::steady_clock::now();
@@ -46,10 +44,6 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& containerName, c
 
         Container nuskriausti = split.first;
         Container protingi = split.second;
-
-        nuskriausti = sortStudents(nuskriausti, sortChoice, ascending);
-
-        protingi = sortStudents(protingi, sortChoice, ascending);
 
         handleResultOutput(nuskriausti, outputChoice, outFilename2);
 
@@ -75,7 +69,7 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& containerName, c
          << "\nVidurkiai per 5 iteracijas:\n"
          << "  Failo nuskaitymas: " << averageLoadSeconds << " s\n"
          << "  Rusiavimas: " << averageSortSeconds << " s\n"
-         << "  Rezultatu spausdinimas: " << averageSplitSeconds << " s\n"
+         << "  Skirtsymas i du konteinerius: " << averageSplitSeconds << " s\n"
          << "  Is viso: " << averageIterationSeconds << " s" << endl;
 }
 
@@ -85,20 +79,20 @@ void runContainerTestsForAllFiles(int containerChoice, const vector<string>& fil
 
         switch (containerChoice) {
             case 1:
-                outputNuskriaustiAndProtingiTestForContainer<vector<Student>>("vector<Student>", filename);
+                outputNuskriaustiAndProtingiTestForContainer<vector<Student>>(filename);
                 break;
             case 2:
-                outputNuskriaustiAndProtingiTestForContainer<std::list<Student>>("list<Student>", filename);
+                outputNuskriaustiAndProtingiTestForContainer<std::list<Student>>(filename);
                 break;
             case 3:
-                outputNuskriaustiAndProtingiTestForContainer<std::deque<Student>>("deque<Student>", filename);
+                outputNuskriaustiAndProtingiTestForContainer<std::deque<Student>>(filename);
                 break;
         }
     }
 }
 
 void outputNuskriaustiAndProtingiTestForAllStudentsTxtFiles() {
-    const vector<string> files = {"students1000", "students10000", "students100000", "stuednts1000000", "students10000000"};
+    const vector<string> files = {"students1000", "students10000", "students100000", "students1000000", "students10000000"};
 
     cout << "\nPasirinkite konteinerio tipą:" << endl;
     cout << "1 - vector<Student>" << endl;
