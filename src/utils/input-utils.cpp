@@ -13,91 +13,83 @@ using std::ws;
 
 int readIntInRange(const string& prompt, int min, int max) {
     string line;
-    int value;
     while (true) {
         cout << prompt;
         getline(cin >> ws, line);
 
-        istringstream iss(line);
+        try {
+            int value;
+            istringstream iss(line);
 
-        if(!(iss >> value) || (iss >> ws && !iss.eof())) {
+            if(!(iss >> value) || (iss >> ws && !iss.eof())) {
+                throw std::invalid_argument("invalid integer input");
+            }
+
+            if (value < min || value > max) {
+                throw std::out_of_range("integer outside valid range");
+            }
+
+            return value;
+        } catch (const std::invalid_argument&) {
             cout << "Prašau įvesti vieną galiojantį sveikąjį skaičių." << endl;
-            continue;
-        }
-
-        if (value < min || value > max) {
+        } catch (const std::out_of_range&) {
             cout << "Reikšmė turi būti nuo " << min << " iki " << max << "\n";
-            continue;
         }
-
-        return value;
-    }
-}
-
-int readSingleIntToken(const string& prompt) {
-    string line;
-    int value;
-    while (true) {
-        cout << prompt;
-        getline(cin >> ws, line);
-
-        istringstream iss(line);
-
-        if(!(iss >> value) || (iss >> ws && !iss.eof())) {
-            cout << "Prašau įvesti vieną galiojantį sveikąjį skaičių." << endl;
-            continue;
-        }
-
-        if (value < 0) {
-            cout << "Prašau įvesti neneigiamą sveikąjį skaičių." << endl;
-            continue;
-        }
-
-        return value;
     }
 }
 
 string readSingleStringToken(const string& prompt) {
     string line;
-    string value;
 
     while (true) {
         cout << prompt;
         getline(cin >> ws, line);
 
-        istringstream iss(line);
+        try {
+            string value;
+            istringstream iss(line);
 
-        if (!(iss >> value)) {
+            if (!(iss >> value)) {
+                throw std::invalid_argument("missing token");
+            }
+
+            if (iss >> ws && !iss.eof()) {
+                throw std::runtime_error("extra tokens");
+            }
+
+            return value;
+        } catch (const std::invalid_argument&) {
             cout << "Prašau įvesti reikšmę." << endl;
-        }
-
-        if (iss >> ws && !iss.eof()) {
+        } catch (const std::runtime_error&) {
             cout << "Prašau įvesti tik vieną žodį." << endl;
-            continue;
         }
-
-        return value;
     }
 }
 
 char readYesOrNo(const string& prompt) {
     string line;
-    char answer;
-    string extra;
 
     while (true) {
         cout << prompt;
         getline(cin >> ws, line);
 
-        istringstream iss(line);
-        if (!(iss >> answer) || (iss >> extra)) {
-            cout << "Prašau įvesti tik y arba n" << endl;
-            continue;
-        }
+        try {
+            char answer;
+            string extra;
+            istringstream iss(line);
 
-        char answerToUpper = toupper(answer);
-        if (answerToUpper == 'Y' || answerToUpper == 'N' ) {
-            return answerToUpper;
+            if (!(iss >> answer) || (iss >> extra)) {
+                throw std::invalid_argument("invalid yes/no input");
+            }
+
+            char answerToUpper = static_cast<char>(toupper(static_cast<unsigned char>(answer)));
+            if (answerToUpper == 'Y' || answerToUpper == 'N' ) {
+                return answerToUpper;
+            }
+
+            throw std::invalid_argument("answer is not y/n");
+        } catch (const std::invalid_argument&) {
+            cout << "Prašau įvesti tik y arba n" << endl;
         }
     }
 }
