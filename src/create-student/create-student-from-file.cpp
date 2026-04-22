@@ -62,9 +62,8 @@ T createStudentsFromFile(const string& filename) {
     T studentsFromFile;
     ifstream in(filename);
 
-    if (!in) {
-        cout << "Nepavyko atidaryti failo: " << filename << endl;
-        return studentsFromFile;
+    if (!in.is_open()) {
+        throw std::runtime_error("Nepavyko atidaryti failo");
     }
 
     string headerLine;
