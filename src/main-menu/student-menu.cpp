@@ -46,13 +46,9 @@ void handleMenuChoice(int choice, vector<Student>& students) {
                 readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
             try {
                 const vector<Student> fileStudents = createStudentsFromFile(filename);
-                if (fileStudents.empty()) {
-                    cout << "Failas atidarytas, bet tinkamų studentų eilučių nerasta "
-                            "(tuščias failas arba netinkamos eilutės)."
-                         << endl;
-                } else {
-                    cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;
-                }
+                
+                cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;
+                
                 students.insert(students.end(), fileStudents.begin(), fileStudents.end());
             } catch (const std::exception& e) {
                 cout << "Klaida skaitant \"" << filename << "\": " << e.what() << endl;
