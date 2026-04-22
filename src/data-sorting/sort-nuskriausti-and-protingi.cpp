@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <deque>
-#include <iterator>
 #include <list>
 
 template <typename T>
@@ -58,8 +57,8 @@ std::pair<T, T> sortNuskriaustiAndProtingiThirdStrategy(T& students) {
 	T protingi;
 	T nuskriausti;
 
-	std::copy(students.begin(), splitPoint, std::back_inserter(protingi));
-	std::copy(splitPoint, students.end(), std::back_inserter(nuskriausti));
+	protingi.insert(protingi.end(), students.begin(), splitPoint);
+	nuskriausti.insert(nuskriausti.end(), splitPoint, students.end());
 
 	return {nuskriausti, protingi};
 }

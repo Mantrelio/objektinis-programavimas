@@ -8,9 +8,7 @@ Student createStudentManual() {
     Student student = Student();
 
     student.name = readSingleStringToken("Suveskite studento vardą: ");
-    
-    student.surname = readSingleStringToken("Suveskite studento pavardę: ");
-    
+    student.surname = readSingleStringToken("Suveskite studento pavard: ");
     student.examGrade = readIntInRange("Suveskite egzamino pažymį: ", 1, 10);
 
     char continueHomework = 'Y';

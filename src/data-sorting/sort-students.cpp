@@ -62,6 +62,9 @@ void sortStudents(T& students, int sortChoice, bool ascending) {
         }
     }
 }
+template void sortStudents(vector<Student>&, int, bool);
+template void sortStudents(std::list<Student>&, int, bool);
+template void sortStudents(std::deque<Student>&, int, bool);
 
 template <typename T>
 void runSortStudentsChoicePrompt(T& students) {
@@ -86,11 +89,6 @@ void runSortStudentsChoicePrompt(T& students) {
 
     sortStudents(students, sortChoice, orderChoice == 1);
 }
-
-template void sortStudents(vector<Student>&, int, bool);
-template void sortStudents(std::list<Student>&, int, bool);
-template void sortStudents(std::deque<Student>&, int, bool);
-
 template void runSortStudentsChoicePrompt(vector<Student>&);
 template void runSortStudentsChoicePrompt(std::list<Student>&);
 template void runSortStudentsChoicePrompt(std::deque<Student>&);

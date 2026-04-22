@@ -3,5 +3,9 @@
 #include "student-vector.h"
 
 void showMainMenu();
-void handleMenuChoice(int choice, vector<Student>& students);
+
+template <typename T>
+void handleMenuChoice(int choice, T& students);
+
+template <typename T>
 void startMainMenu();

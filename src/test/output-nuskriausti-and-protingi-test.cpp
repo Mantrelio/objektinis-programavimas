@@ -3,7 +3,6 @@
 #include "create-student.h"
 #include "sort-students.h"
 #include "sort-nuskriausti-and-protingi.h"
-#include "output-results.h"
 
 #include <chrono>
 #include <deque>
@@ -17,11 +16,8 @@ using std::endl;
 
 template <typename Container>
 void outputNuskriaustiAndProtingiTestForContainer(const string& filename, int strategyChoice) {
-    const int sortChoice = 1;
+    const int sortChoice = 3;
     const bool ascending = true;
-
-    string outFilename = "nuskriausti.txt";
-    string outFilename2 = "protingi.txt";
 
     double totalLoadSeconds = 0.0;
     double totalSortSeconds = 0.0;
@@ -73,11 +69,27 @@ void outputNuskriaustiAndProtingiTestForContainer(const string& filename, int st
          << "\nVidurkiai per 5 iteracijas:\n"
          << "  Failo nuskaitymas: " << averageLoadSeconds << " s\n"
          << "  Rusiavimas: " << averageSortSeconds << " s\n"
-         << "  Skirtsymas i du konteinerius: " << averageSplitSeconds << " s\n"
+         << "  Skirstymas i du konteinerius: " << averageSplitSeconds << " s\n"
          << "  Is viso: " << averageIterationSeconds << " s" << endl;
 }
 
-void runContainerTestsForAllFiles(int containerChoice, int strategyChoice, const vector<string>& files) {
+void outputNuskriaustiAndProtingiTestForAllStudentsTxtFiles() {
+    const vector<string> files = {"students1000", "students10000", "students100000", "students1000000", "students10000000"};
+
+    cout << "\nPasirinkite konteinerio tipa:" << endl;
+    cout << "1 - vector<Student>" << endl;
+    cout << "2 - list<Student>" << endl;
+    cout << "3 - deque<Student>" << endl;
+
+    const int containerChoice = readIntInRange("Pasirinkimas: ", 1, 3);
+
+    cout << "\nPasirinkite strategija:" << endl;
+    cout << "1 - Pirma" << endl;
+    cout << "2 - Antra" << endl;
+    cout << "3 - Trecia" << endl;
+
+    const int strategyChoice = readIntInRange("Pasirinkimas: ", 1, 3);
+
     for (const string& filename : files) {
         cout << "\n=== Testuojamas failas: " << filename << " ===" << endl;
 
@@ -93,24 +105,4 @@ void runContainerTestsForAllFiles(int containerChoice, int strategyChoice, const
                 break;
         }
     }
-}
-
-void outputNuskriaustiAndProtingiTestForAllStudentsTxtFiles() {
-    const vector<string> files = {"students1000", "students10000", "students100000", "students1000000", "students10000000"};
-
-    cout << "\nPasirinkite konteinerio tipą:" << endl;
-    cout << "1 - vector<Student>" << endl;
-    cout << "2 - list<Student>" << endl;
-    cout << "3 - deque<Student>" << endl;
-
-    const int containerChoice = readIntInRange("Pasirinkimas: ", 1, 3);
-
-    cout << "\nPasirinkite strategija:" << endl;
-    cout << "1 - Pirma" << endl;
-    cout << "2 - Antra" << endl;
-    cout << "3 - Trecia" << endl;
-
-    const int strategyChoice = readIntInRange("Pasirinkimas: ", 1, 3);
-
-    runContainerTestsForAllFiles(containerChoice, strategyChoice, files);
 }

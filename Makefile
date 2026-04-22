@@ -8,7 +8,6 @@ SOURCES = src/main.cpp src/grading/student-grading.cpp \
 	src/test/output-nuskriausti-and-protingi-test.cpp \
 	src/data-sorting/sort-students.cpp \
 	src/data-sorting/sort-nuskriausti-and-protingi.cpp \
-	src/output/output-nuskriausti-and-protingi.cpp \
 	src/output/output-results.cpp \
 	src/create-student/create-student-manually.cpp src/create-student/create-student-partially-random.cpp \
 	src/create-student/create-student-random.cpp src/create-student/create-student-from-file.cpp

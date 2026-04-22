@@ -9,10 +9,9 @@ Student createStudentRandomGrades() {
     Student student = Student();
 
     student.name = readSingleStringToken("Suveskite studento vardą: ");
-    
     student.surname = readSingleStringToken("Suveskite studento pavardę: ");
-    
     student.examGrade = randomGrade();
+    
     cout << "Sugeneruotas egzamino pažymys: " << student.examGrade << endl;
 
     int homeworkCount = randomGrade(3, 10);

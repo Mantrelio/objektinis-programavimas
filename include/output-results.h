@@ -7,9 +7,5 @@
 template <typename T>
 void outputResults(const T& students, std::ostream& out);
 
-void runHandleResultOutputPrompt(const vector<Student>& students);
-
 template <typename T>
-void handleResultOutput(const T& students, int outputChoice, const string& outFilename);
-
-void chooseOutputAndPrint(vector<Student>& students);
+void chooseOutputAndPrint(T& students);
