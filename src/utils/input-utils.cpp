@@ -93,3 +93,25 @@ char readYesOrNo(const string& prompt) {
         }
     }
 }
+
+int readSingleIntToken(const string& prompt) {
+    string line;
+
+    while (true) {
+        cout << prompt;
+        getline(cin >> ws, line);
+
+        try {
+            int value;
+            istringstream iss(line);
+
+            if (!(iss >> value) || (iss >> ws && !iss.eof())) {
+                throw std::invalid_argument("invalid integer input");
+            }
+
+            return value;
+        } catch (const std::invalid_argument&) {
+            cout << "Prasau ivesti tik viena sveikaji skaiciu." << endl;
+        }
+    }
+}
