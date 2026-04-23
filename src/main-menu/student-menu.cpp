@@ -56,12 +56,11 @@ void handleMenuChoice(int choice, T& students) {
             const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
             try {
                 const T fileStudents = createStudentsFromFile<T>(filename);
-                cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;
-                
-                students.insert(students.end(), fileStudents.begin(), fileStudents.end());
+                cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;                
             } catch (const std::exception& e) {
                 cout << "Klaida skaitant \"" << filename << "\": " << e.what() << endl;
             }
+            students.insert(students.end(), fileStudents.begin(), fileStudents.end());
             break;
         }
         case 5: 
