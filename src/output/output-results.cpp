@@ -57,7 +57,7 @@ void chooseOutputAndPrint(T& students) {
     const int outputChoice = readIntInRange("Pasirinkimas: ", 1, 2);
 
     if (outputChoice == 2) {
-        const string outFilename = readSingleStringToken("Suveskite išsaugų failo pavadinimą (pvz. results.txt): ");
+        const string outFilename = readSingleStringToken("Suveskite išsaugojimo failo pavadinimą (pvz. results): ");
         try {
             ofstream outFile(outFilename);
             if (!outFile) {

@@ -72,7 +72,7 @@ template std::pair<std::deque<Student>, std::deque<Student>> sortNuskriaustiAndP
 
 template <typename T>
 void handleSortNuskriaustiAndProtingiFromFile() {
-	const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
+	const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data): ");
 
 	try {
 		T fileStudents = createStudentsFromFile<T>(filename);

@@ -53,7 +53,7 @@ void handleMenuChoice(int choice, T& students) {
             students.push_back(createStudentFullyRandom());
             break;
         case 4: {
-            const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
+            const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data): ");
             T fileStudents;
             try {
                 fileStudents = createStudentsFromFile<T>(filename);
