@@ -54,11 +54,13 @@ void handleMenuChoice(int choice, T& students) {
             break;
         case 4: {
             const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
+            T fileStudents;
             try {
-                const T fileStudents = createStudentsFromFile<T>(filename);
-                cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;                
+                fileStudents = createStudentsFromFile<T>(filename);
+                cout << "Sėkmingai nuskaityti " << fileStudents.size() << " studentai iš failo." << endl;
             } catch (const std::exception& e) {
                 cout << "Klaida skaitant \"" << filename << "\": " << e.what() << endl;
+                break;
             }
             students.insert(students.end(), fileStudents.begin(), fileStudents.end());
             break;
@@ -67,49 +69,7 @@ void handleMenuChoice(int choice, T& students) {
             handleGenerateStudentListFile();
             break;
         case 6: {
-            const string filename = readSingleStringToken("Suveskite failo pavadinimą (pvz. data.txt): ");
-            try {
-                T fileStudents = createStudentsFromFile<T>(filename);
-
-                runSortStudentsChoicePrompt(fileStudents);
-
-                cout << "\nPasirinkite strategija:" << endl;
-                cout << "1 - Pirma" << endl;
-                cout << "2 - Antra" << endl;
-                cout << "3 - Trecia" << endl;
-
-                const int strategyChoice = readIntInRange("Pasirinkimas: ", 1, 3);
-
-                T nuskriausti;
-                T protingi;
-
-                switch (strategyChoice) {
-                    case 1: {
-                        auto splitResult = sortNuskriaustiAndProtingiFirstStrategy(fileStudents);
-                        nuskriausti = std::move(splitResult.first);
-                        protingi = std::move(splitResult.second);
-                        break;
-                    }
-                    case 2:
-                        nuskriausti = sortNuskriaustiAndProtingiSecondStrategy(fileStudents);
-                        protingi = std::move(fileStudents);
-                        break;
-                    case 3: {
-                        auto splitResult = sortNuskriaustiAndProtingiThirdStrategy(fileStudents);
-                        nuskriausti = std::move(splitResult.first);
-                        protingi = std::move(splitResult.second);
-                        break;
-                    }
-                }
-
-                cout << "\n--- Nuskriausti ---" << endl;
-                chooseOutputAndPrint(nuskriausti);
-
-                cout << "\n--- Protingi ---" << endl;
-                chooseOutputAndPrint(protingi);
-            } catch (const std::exception& e) {
-                cout << "Klaida skaitant \"" << filename << "\": " << e.what() << endl;
-            }
+            handleSortNuskriaustiAndProtingiFromFile<T>();
             break;
         }
         case 7: 
