@@ -22,11 +22,11 @@ int readIntInRange(const string& prompt, int min, int max) {
             istringstream iss(line);
 
             if(!(iss >> value) || (iss >> ws && !iss.eof())) {
-                throw std::invalid_argument("invalid integer input");
+                throw std::invalid_argument("Netinkamas Skaicius");
             }
 
             if (value < min || value > max) {
-                throw std::out_of_range("integer outside valid range");
+                throw std::out_of_range("Skaicius uz galimybiu ribu");
             }
 
             return value;

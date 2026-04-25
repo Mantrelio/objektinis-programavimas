@@ -101,7 +101,7 @@ Programa pateikia laikus šioms dalims:
 
 ## Testų rezultatų demonstracija
 
-Žemiau pateikti užfiksuoti rezultatų grafikai kiekvienam konteineriui:
+Žemiau pateikti užfiksuoti rezultatų laikai lentelėmis (vidurkiai per 5 iteracijas):
 
 ### Pirma strategija
 
@@ -109,13 +109,37 @@ Programa pateikia laikus šioms dalims:
 
 ![vector<Student> rezultatai](assets/student-vector.png)
 
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.005348 | 0.000910 | 0.000474 | 0.006732 |
+| `students10000` | 0.040123 | 0.010939 | 0.004286 | 0.055347 |
+| `students100000` | 0.401102 | 0.143412 | 0.049738 | 0.594252 |
+| `students1000000` | 4.028192 | 1.857539 | 0.565715 | 6.451447 |
+| `students10000000` | 43.320240 | 23.159201 | 6.503951 | 72.983393 |
+
 #### `list<Student>`
 
 ![list<Student> rezultatai](assets/student-list.png)
 
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.264378 | 0.000416 | 0.000417 | 0.265211 |
+| `students10000` | 0.040764 | 0.005462 | 0.005061 | 0.051287 |
+| `students100000` | 0.416849 | 0.079589 | 0.058335 | 0.554772 |
+| `students1000000` | 4.277907 | 1.122498 | 0.628193 | 6.028598 |
+| `students10000000` | 45.728463 | 15.337076 | 8.380724 | 69.446262 |
+
 #### `deque<Student>`
 
 ![deque<Student> rezultatai](assets/student-deque.png)
+
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 2.442345 | 0.000990 | 0.000362 | 2.443697 |
+| `students10000` | 0.041081 | 0.012963 | 0.003810 | 0.057854 |
+| `students100000` | 0.398689 | 0.167914 | 0.049400 | 0.616003 |
+| `students1000000` | 4.063413 | 2.163593 | 0.525970 | 6.752976 |
+| `students10000000` | 40.819395 | 26.040447 | 5.865333 | 72.725175 |
 
 ### Antra strategija
 
@@ -123,13 +147,37 @@ Programa pateikia laikus šioms dalims:
 
 ![vector<Student> rezultatai 2](assets/student-vector-2.png)
 
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.004007 | 0.000872 | 0.000344 | 0.005223 |
+| `students10000` | 0.039909 | 0.010761 | 0.003104 | 0.053774 |
+| `students100000` | 0.404832 | 0.146227 | 0.044469 | 0.595528 |
+| `students1000000` | 4.443715 | 1.951990 | 0.555521 | 6.951227 |
+| `students10000000` | 44.326327 | 23.175477 | 7.253997 | 74.755801 |
+
 #### `list<Student>`
 
 ![list<Student> rezultatai 2](assets/student-list-2.png)
 
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.286870 | 0.000371 | 0.000278 | 0.287519 |
+| `students10000` | 0.039071 | 0.005386 | 0.003218 | 0.047675 |
+| `students100000` | 0.400632 | 0.078744 | 0.057819 | 0.537194 |
+| `students1000000` | 4.452552 | 1.286516 | 0.695090 | 6.434158 |
+| `students10000000` | 42.211864 | 15.680675 | 7.077309 | 64.969847 |
+
 #### `deque<Student>`
 
 ![deque<Student> rezultatai 2](assets/student-deque-2.png)
+
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.011808 | 0.000961 | 0.000364 | 0.013133 |
+| `students10000` | 0.039603 | 0.011673 | 0.002958 | 0.054233 |
+| `students100000` | 0.380325 | 0.160646 | 0.050190 | 0.591161 |
+| `students1000000` | 3.919922 | 2.027911 | 0.598699 | 6.546532 |
+| `students10000000` | 40.708973 | 25.136992 | 6.387175 | 72.233141 |
 
 ### Trečia strategija
 
@@ -137,13 +185,37 @@ Programa pateikia laikus šioms dalims:
 
 ![vector<Student> rezultatai 3](assets/student-vector-3.png)
 
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.004231 | 0.001078 | 0.000841 | 0.006150 |
+| `students10000` | 0.046350 | 0.010051 | 0.006671 | 0.063072 |
+| `students100000` | 0.377915 | 0.139659 | 0.080396 | 0.597970 |
+| `students1000000` | 3.887733 | 1.783990 | 0.835001 | 6.506724 |
+| `students10000000` | 43.283007 | 24.787941 | 10.309531 | 78.380478 |
+
 #### `list<Student>`
 
 ![list<Student> rezultatai 3](assets/student-list-3.png)
 
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 1.561354 | 0.000375 | 0.047994 | 1.609723 |
+| `students10000` | 0.039060 | 0.005398 | 0.067487 | 0.111945 |
+| `students100000` | 0.413575 | 0.094919 | 0.133518 | 0.642012 |
+| `students1000000` | 4.283401 | 1.266510 | 1.434149 | 6.984060 |
+| `students10000000` | 43.516639 | 15.593472 | 14.049236 | 73.159348 |
+
 #### `deque<Student>`
 
 ![deque<Student> rezultatai 3](assets/student-deque-3.png)
+
+| Failas | Failo nuskaitymas (s) | Rūšiavimas (s) | Skirstymas į du konteinerius (s) | Iš viso (s) |
+| --- | ---: | ---: | ---: | ---: |
+| `students1000` | 0.004440 | 0.001544 | 0.000718 | 0.006701 |
+| `students10000` | 0.037823 | 0.011935 | 0.006842 | 0.056600 |
+| `students100000` | 0.379881 | 0.165033 | 0.083893 | 0.628808 |
+| `students1000000` | 3.869504 | 2.117392 | 0.882899 | 6.869795 |
+| `students10000000` | 39.435232 | 26.053171 | 9.309120 | 74.797523 |
 
 Pastaba: rezultatai priklauso nuo aparatinės įrangos, kompiliatoriaus versijos, disko spartos ir tuo metu veikiančių foninių procesų.
 
